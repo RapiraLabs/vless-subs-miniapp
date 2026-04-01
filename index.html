@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Eblo.VPN</title>
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="config.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0f1e;
+      --surface: #131929;
+      --surface2: #1a2235;
+      --border: rgba(255,255,255,0.07);
+      --accent: #6c63ff;
+      --accent2: #a78bfa;
+      --green: #22c55e;
+      --text: #f0f0f8;
+      --muted: #7a8aaa;
+      --tab-h: 88px;
+      --radius: 18px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Safe area для Telegram — отступ под кнопки TG */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding-top: var(--tg-safe-top, env(safe-area-inset-top, 0px));
+    }
+
+    /* Экран блокировки (открыт вне Telegram) */
+    #tg-guard {
+      display: none;
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 32px;
+      text-align: center;
+    }
+    #tg-guard.show { display: flex; }
+    .guard-icon { font-size: 56px; }
+    .guard-title {
+      font-size: 22px; font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .guard-text {
+      font-size: 15px; color: var(--muted); line-height: 1.5; max-width: 280px;
+    }
+    .guard-btn {
+      margin-top: 8px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 14px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      text-decoration: none; display: inline-block;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      max-width: 390px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+      height: 100dvh;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 10px;
+      flex-shrink: 0;
+      gap: 8px;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-icon {
+      width: 34px; height: 34px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .logo-name {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      background: linear-gradient(90deg, #fff, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header-right {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .header-status {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.25);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--green);
+    }
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .support-btn {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(108,99,255,0.15);
+      border: 1px solid rgba(108,99,255,0.35);
+      border-radius: 20px;
+      padding: 5px 13px;
+      font-size: 12px; font-weight: 600;
+      color: var(--accent2);
+      cursor: pointer;
+      transition: background .15s, transform .1s;
+      white-space: nowrap;
+    }
+    .support-btn:active { background: rgba(108,99,255,0.28); transform: scale(.96); }
+    .support-btn-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent2);
+      flex-shrink: 0;
+    }
+
+    /* ── Pages ── */
+    .pages-wrap {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .page {
+      position: absolute; inset: 0;
+      overflow-y: auto;
+      padding: 8px 16px calc(var(--tab-h) + 20px);
+      display: none;
+      scrollbar-width: none;
+    }
+    .page::-webkit-scrollbar { display: none; }
+    .page.active { display: block; }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+    .card-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* ── Profile ── */
+    .sub-section-title {
+      font-size: 20px; font-weight: 700;
+      margin-bottom: 14px; letter-spacing: -0.3px;
+    }
+    .sub-card {
+      background: linear-gradient(135deg, #1e1b4b 0%, #2d1f5e 100%);
+      border: 1px solid rgba(108,99,255,0.3);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+    .sub-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 130px; height: 130px;
+      background: radial-gradient(circle, rgba(167,139,250,0.18) 0%, transparent 70%);
+    }
+    .sub-badge {
+      display: inline-flex;
+      align-items: center; gap: 5px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px; font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    .sub-rows { display: flex; flex-direction: column; gap: 10px; }
+    .sub-row { display: flex; justify-content: space-between; align-items: center; }
+    .sub-row-label { font-size: 13px; color: rgba(255,255,255,0.55); }
+    .sub-row-value { font-size: 14px; font-weight: 600; color: #fff; }
+    .sub-row-value.green { color: var(--green); }
+    .sub-row-value.accent { color: var(--accent2); }
+
+    /* ── Buttons ── */
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border-radius: 14px;
+      font-size: 15px; font-weight: 600;
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity .15s, transform .1s;
+      margin-bottom: 10px;
+    }
+    .btn:active { opacity: .8; transform: scale(.98); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+    .btn-outline { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-copy { background: var(--surface2); color: var(--accent2); border: 1px solid rgba(108,99,255,0.3); }
+    .btn-support { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+
+    /* ── Servers ── */
+    .servers-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .servers-title { font-size: 20px; font-weight: 700; }
+    .servers-count {
+      font-size: 12px; color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 3px 10px;
+    }
+    .server-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 14px;
+      transition: border-color .2s;
+    }
+    .server-card:hover { border-color: rgba(108,99,255,0.35); }
+    .server-flag { font-size: 28px; line-height: 1; flex-shrink: 0; }
+    .server-info { flex: 1; min-width: 0; }
+    .server-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .server-location { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .server-ping { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
+    .ping-val { font-size: 13px; font-weight: 700; }
+    .ping-val.good { color: var(--green); }
+    .ping-val.ok { color: #facc15; }
+    .ping-val.bad { color: #f87171; }
+    .ping-label { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    .ping-bars { display: flex; align-items: flex-end; gap: 2px; margin-top: 4px; }
+    .ping-bar { width: 4px; border-radius: 2px; background: var(--surface2); }
+    .ping-bar.active { background: var(--green); }
+    .ping-bar.active.ok { background: #facc15; }
+
+    /* ── Devices ── */
+    .devices-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .devices-title { font-size: 20px; font-weight: 700; }
+    .device-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .device-icon-wrap {
+      width: 44px; height: 44px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .device-info { flex: 1; min-width: 0; }
+    .device-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .device-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .device-status {
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .device-status.online { background: var(--green); box-shadow: 0 0 6px rgba(34,197,94,.5); }
+    .device-status.offline { background: var(--muted); }
+    .devices-limit {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 12px;
+    }
+    .devices-limit-label { font-size: 13px; color: var(--muted); }
+    .devices-limit-val { font-size: 14px; font-weight: 700; color: var(--accent2); }
+    .progress-bar-wrap {
+      background: var(--surface2);
+      border-radius: 4px;
+      height: 6px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+
+    /* ── Instructions ── */
+    .instr-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .instr-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .accordion { margin-bottom: 10px; }
+    .acc-header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer; user-select: none;
+      transition: background .15s;
+    }
+    .acc-header:hover { background: var(--surface2); }
+    .accordion.open .acc-header {
+      border-radius: var(--radius) var(--radius) 0 0;
+      border-bottom-color: transparent;
+      background: var(--surface2);
+    }
+    .acc-icon { font-size: 22px; flex-shrink: 0; }
+    .acc-label { flex: 1; font-size: 16px; font-weight: 600; }
+    .acc-arrow {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      transition: transform .25s, background .15s;
+      flex-shrink: 0;
+    }
+    .accordion.open .acc-header .acc-arrow {
+      transform: rotate(180deg);
+      background: rgba(108,99,255,0.25);
+    }
+    .acc-body {
+      max-height: 0; overflow: hidden;
+      transition: max-height .35s cubic-bezier(.4,0,.2,1);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 var(--radius) var(--radius);
+    }
+    .accordion.open .acc-body { max-height: 600px; }
+    .acc-content { padding: 16px 18px 18px; }
+    .step { display: flex; gap: 12px; margin-bottom: 14px; }
+    .step:last-child { margin-bottom: 0; }
+    .step-num {
+      width: 24px; height: 24px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .step-text {
+      font-size: 13px; line-height: 1.5;
+      color: rgba(255,255,255,0.85); padding-top: 3px;
+    }
+    .step-text strong { color: #fff; }
+    .step-text a { color: var(--accent2); text-decoration: none; }
+
+    /* ══ TAB BAR — Liquid Glass + sliding pill ══ */
+    .tabbar-wrap {
+      position: fixed;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 100%; max-width: 390px;
+      height: var(--tab-h);
+      display: flex; align-items: flex-start;
+      justify-content: center;
+      padding: 10px 14px 0;
+      background: transparent;
+      z-index: 100;
+    }
+
+    .tabbar {
+      width: 100%;
+      position: relative;
+      background: rgba(255,255,255,0.04);
+      backdrop-filter: saturate(180%) blur(40px) brightness(1.15);
+      -webkit-backdrop-filter: saturate(180%) blur(40px) brightness(1.15);
+      border: 1px solid rgba(255,255,255,0.13);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      border-radius: 36px;
+      display: flex;
+      align-items: center;
+      padding: 5px;
+      gap: 0;
+      box-shadow:
+        0 8px 32px rgba(0,0,0,0.35),
+        0 1px 0 rgba(255,255,255,0.12) inset,
+        0 -1px 0 rgba(0,0,0,0.2) inset;
+    }
+
+    /* sliding glass capsule */
+    .tab-pill {
+      position: absolute;
+      top: 5px;
+      height: calc(100% - 10px);
+      border-radius: 30px;
+      background: rgba(255,255,255,0.12);
+      box-shadow:
+        0 2px 14px rgba(0,0,0,0.28),
+        inset 0 1px 0 rgba(255,255,255,0.22),
+        inset 0 -1px 0 rgba(0,0,0,0.12);
+      transition: left 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  width 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 9px 4px 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 30px;
+      position: relative;
+      z-index: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .tab-icon {
+      width: 26px; height: 26px;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.35);
+      transition: color .25s, transform .25s;
+    }
+    .tab-icon svg { width: 22px; height: 22px; }
+    .tab-btn.active .tab-icon {
+      color: rgba(255,255,255,0.95);
+      transform: scale(1.1);
+    }
+
+    .tab-label {
+      font-size: 10px; font-weight: 500;
+      color: rgba(255,255,255,0.35);
+      transition: color .2s, font-weight .2s;
+      letter-spacing: 0.1px;
+      white-space: nowrap;
+    }
+    .tab-btn.active .tab-label { color: rgba(255,255,255,0.95); font-weight: 600; }
+
+    /* ── Snackbar ── */
+    .snackbar {
+      position: fixed;
+      bottom: calc(var(--tab-h) + 16px);
+      left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1e2b1e;
+      border: 1px solid rgba(34,197,94,0.3);
+      color: var(--green);
+      font-size: 13px; font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity .25s, transform .25s;
+      z-index: 200;
+      pointer-events: none;
+    }
+    .snackbar.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
+</head>
+<body>
+
+<!-- Блокировка вне Telegram -->
+<div id="tg-guard">
+  <div class="guard-icon">✈️</div>
+  <div class="guard-title">Только в Telegram</div>
+  <div class="guard-text" id="guard-text">Это мини-приложение работает только внутри Telegram.</div>
+  <a class="guard-btn" id="guard-btn" href="#">Открыть в Telegram</a>
+</div>
+
+<div id="app">
+<!-- Header -->
+<div class="header">
+  <div class="header-logo">
+    <div class="logo-icon">🔒</div>
+    <span class="logo-name">Eblo.VPN</span>
+  </div>
+  <div class="header-right">
+    <button class="support-btn" onclick="openSupport()">
+      <span class="support-btn-dot"></span>
+      Поддержка
+    </button>
+    <div class="header-status">
+      <span class="status-dot"></span>
+      Активен
+    </div>
+  </div>
+</div>
+
+<!-- Pages -->
+<div class="pages-wrap">
+
+  <!-- ══ PROFILE ══ -->
+  <div class="page active" id="page-profile">
+    <div class="sub-section-title">Подписка</div>
+    <div class="sub-card">
+      <div class="sub-badge">⚡ Premium</div>
+      <div class="sub-rows">
+        <div class="sub-row">
+          <span class="sub-row-label">Тип подписки</span>
+          <span class="sub-row-value accent">Premium Pro</span>
+        </div>
+        <div class="sub-row">
+          <span class="sub-row-label">Осталось</span>
+          <span class="sub-row-value green">23 дня</span>
+        </div>
+        <div class="sub-row">
+          <span class="sub-row-label">Дата окончания</span>
+          <span class="sub-row-value">22 апреля 2026</span>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-copy" onclick="copyKey()">
+      <span>📋</span> Скопировать ключ
+    </button>
+    <button class="btn btn-primary" onclick="openApp()">
+      <span>🚀</span> Перейти в приложение
+    </button>
+    <div class="card" style="margin-top:4px;">
+      <div class="card-label">Аккаунт</div>
+      <div class="sub-rows">
+        <div class="sub-row">
+          <span class="sub-row-label">ID</span>
+          <span class="sub-row-value" style="font-family:monospace;font-size:13px">#EBL-04821</span>
+        </div>
+        <div class="sub-row">
+          <span class="sub-row-label">Устройств</span>
+          <span class="sub-row-value">2 / 5</span>
+        </div>
+        <div class="sub-row">
+          <span class="sub-row-label">Трафик</span>
+          <span class="sub-row-value green">∞ Безлимит</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SERVERS ══ -->
+  <div class="page" id="page-servers">
+    <div class="servers-header">
+      <div class="servers-title">Серверы</div>
+      <span class="servers-count">6 онлайн</span>
+    </div>
+    <div class="server-card">
+      <div class="server-flag">🇩🇪</div>
+      <div class="server-info">
+        <div class="server-name">Frankfurt #1</div>
+        <div class="server-location">Германия, EU</div>
+      </div>
+      <div class="server-ping">
+        <span class="ping-val good">18 мс</span>
+        <span class="ping-label">пинг</span>
+        <div class="ping-bars">
+          <div class="ping-bar active" style="height:6px"></div>
+          <div class="ping-bar active" style="height:9px"></div>
+          <div class="ping-bar active" style="height:13px"></div>
+          <div class="ping-bar active" style="height:17px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="server-card">
+      <div class="server-flag">🇳🇱</div>
+      <div class="server-info">
+        <div class="server-name">Amsterdam #1</div>
+        <div class="server-location">Нидерланды, EU</div>
+      </div>
+      <div class="server-ping">
+        <span class="ping-val good">24 мс</span>
+        <span class="ping-label">пинг</span>
+        <div class="ping-bars">
+          <div class="ping-bar active" style="height:6px"></div>
+          <div class="ping-bar active" style="height:9px"></div>
+          <div class="ping-bar active" style="height:13px"></div>
+          <div class="ping-bar" style="height:17px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="server-card">
+      <div class="server-flag">🇫🇮</div>
+      <div class="server-info">
+        <div class="server-name">Helsinki #1</div>
+        <div class="server-location">Финляндия, EU</div>
+      </div>
+      <div class="server-ping">
+        <span class="ping-val good">31 мс</span>
+        <span class="ping-label">пинг</span>
+        <div class="ping-bars">
+          <div class="ping-bar active" style="height:6px"></div>
+          <div class="ping-bar active" style="height:9px"></div>
+          <div class="ping-bar active" style="height:13px"></div>
+          <div class="ping-bar" style="height:17px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="server-card">
+      <div class="server-flag">🇬🇧</div>
+      <div class="server-info">
+        <div class="server-name">London #1</div>
+        <div class="server-location">Великобритания, EU</div>
+      </div>
+      <div class="server-ping">
+        <span class="ping-val ok">47 мс</span>
+        <span class="ping-label">пинг</span>
+        <div class="ping-bars">
+          <div class="ping-bar active ok" style="height:6px"></div>
+          <div class="ping-bar active ok" style="height:9px"></div>
+          <div class="ping-bar active ok" style="height:13px"></div>
+          <div class="ping-bar" style="height:17px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="server-card">
+      <div class="server-flag">🇺🇸</div>
+      <div class="server-info">
+        <div class="server-name">New York #1</div>
+        <div class="server-location">США, NA</div>
+      </div>
+      <div class="server-ping">
+        <span class="ping-val ok">89 мс</span>
+        <span class="ping-label">пинг</span>
+        <div class="ping-bars">
+          <div class="ping-bar active ok" style="height:6px"></div>
+          <div class="ping-bar active ok" style="height:9px"></div>
+          <div class="ping-bar" style="height:13px"></div>
+          <div class="ping-bar" style="height:17px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="server-card">
+      <div class="server-flag">🇯🇵</div>
+      <div class="server-info">
+        <div class="server-name">Tokyo #1</div>
+        <div class="server-location">Япония, Asia</div>
+      </div>
+      <div class="server-ping">
+        <span class="ping-val bad">142 мс</span>
+        <span class="ping-label">пинг</span>
+        <div class="ping-bars">
+          <div class="ping-bar active ok" style="height:6px"></div>
+          <div class="ping-bar" style="height:9px"></div>
+          <div class="ping-bar" style="height:13px"></div>
+          <div class="ping-bar" style="height:17px"></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-support" style="margin-top:4px" onclick="openSupport()">
+      💬 Техническая поддержка
+    </button>
+  </div>
+
+  <!-- ══ DEVICES ══ -->
+  <div class="page" id="page-devices">
+    <div class="devices-header">
+      <div class="devices-title">Устройства</div>
+    </div>
+
+    <div class="devices-limit">
+      <div>
+        <div class="sub-row-label" style="font-size:13px;color:var(--muted)">Использовано слотов</div>
+        <div class="progress-bar-wrap" style="width:180px;margin-top:8px;">
+          <div class="progress-bar-fill" style="width:40%"></div>
+        </div>
+      </div>
+      <div class="devices-limit-val">2 / 5</div>
+    </div>
+
+    <div class="device-card">
+      <div class="device-icon-wrap">💻</div>
+      <div class="device-info">
+        <div class="device-name">MacBook Pro</div>
+        <div class="device-meta">macOS · Последний вход сегодня</div>
+      </div>
+      <div class="device-status online"></div>
+    </div>
+
+    <div class="device-card">
+      <div class="device-icon-wrap">📱</div>
+      <div class="device-info">
+        <div class="device-name">iPhone 15 Pro</div>
+        <div class="device-meta">iOS · Последний вход сегодня</div>
+      </div>
+      <div class="device-status online"></div>
+    </div>
+
+    <div class="device-card" style="opacity:.5">
+      <div class="device-icon-wrap" style="opacity:.5">🖥️</div>
+      <div class="device-info">
+        <div class="device-name" style="color:var(--muted)">Слот свободен</div>
+        <div class="device-meta">Можно добавить устройство</div>
+      </div>
+    </div>
+
+    <button class="btn btn-outline" style="margin-top:4px">
+      + Добавить устройство
+    </button>
+  </div>
+
+  <!-- ══ INSTRUCTIONS ══ -->
+  <div class="page" id="page-instr">
+    <div class="instr-title">Инструкция</div>
+    <div class="instr-subtitle">Выбери платформу для подключения</div>
+
+    <div class="accordion" id="acc-mac">
+      <div class="acc-header" onclick="toggleAcc('acc-mac')">
+        <span class="acc-icon">🍎</span>
+        <span class="acc-label">macOS</span>
+        <span class="acc-arrow">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Скачай <strong>Hiddify</strong> или <strong>V2rayU</strong> из <a href="#">App Store</a>.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Нажми <strong>«Скопировать ключ»</strong> на странице Профиль.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">Открой приложение → <strong>«Добавить сервер»</strong> → вставь ключ.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-text">Нажми <strong>«Подключиться»</strong> — значок 🔒 появится в строке меню.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion" id="acc-win">
+      <div class="acc-header" onclick="toggleAcc('acc-win')">
+        <span class="acc-icon">🪟</span>
+        <span class="acc-label">Windows</span>
+        <span class="acc-arrow">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Скачай <strong>Hiddify</strong> или <strong>v2rayN</strong> с <a href="#">GitHub Releases</a>.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Скопируй ключ на странице <strong>Профиль</strong>.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">Нажми <strong>«Import from clipboard»</strong> в приложении.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-text">Включи VPN — иконка появится в системном трее.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion" id="acc-android">
+      <div class="acc-header" onclick="toggleAcc('acc-android')">
+        <span class="acc-icon">🤖</span>
+        <span class="acc-label">Android</span>
+        <span class="acc-arrow">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Установи <strong>Hiddify</strong> или <strong>v2rayNG</strong> из <a href="#">Google Play</a>.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Скопируй ключ в разделе <strong>Профиль</strong>.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">В приложении нажми <strong>«+»</strong> → <strong>«Импорт из буфера»</strong>.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-text">Выбери сервер и нажми ▶️. Разреши создание VPN-соединения.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion" id="acc-ios">
+      <div class="acc-header" onclick="toggleAcc('acc-ios')">
+        <span class="acc-icon">📱</span>
+        <span class="acc-label">iOS / iPadOS</span>
+        <span class="acc-arrow">▾</span>
+      </div>
+      <div class="acc-body">
+        <div class="acc-content">
+          <div class="step"><div class="step-num">1</div><div class="step-text">Скачай <strong>Hiddify</strong> или <strong>Streisand</strong> из <a href="#">App Store</a>.</div></div>
+          <div class="step"><div class="step-num">2</div><div class="step-text">Скопируй ключ на странице <strong>Профиль</strong>.</div></div>
+          <div class="step"><div class="step-num">3</div><div class="step-text">Нажми <strong>«+»</strong> → <strong>«Добавить из буфера обмена»</strong>.</div></div>
+          <div class="step"><div class="step-num">4</div><div class="step-text">Разреши добавление VPN-профиля и подключись. Готово! 🎉</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:8px"></div>
+    <button class="btn btn-support" onclick="openSupport()">
+      💬 Нужна помощь? Написать в поддержку
+    </button>
+  </div>
+
+</div>
+
+<!-- ══ TAB BAR ══ -->
+<div class="tabbar-wrap">
+  <div class="tabbar" id="tabbar">
+    <div class="tab-pill" id="tab-pill"></div>
+
+    <button class="tab-btn" id="tab-servers" onclick="switchTab('servers')">
+      <div class="tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v4c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 9v4c0 1.66 4.03 3 9 3s9-1.34 9-3V9"/><path d="M3 13v4c0 1.66 4.03 3 9 3s9-1.34 9-3v-4"/>
+        </svg>
+      </div>
+      <span class="tab-label">Сервера</span>
+    </button>
+
+    <button class="tab-btn" id="tab-devices" onclick="switchTab('devices')">
+      <div class="tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2"/><rect x="2" y="7" width="6" height="11" rx="1"/><line x1="12" y1="18" x2="12" y2="18.01"/>
+        </svg>
+      </div>
+      <span class="tab-label">Устройства</span>
+    </button>
+
+    <button class="tab-btn active" id="tab-profile" onclick="switchTab('profile')">
+      <div class="tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <span class="tab-label">Профиль</span>
+    </button>
+
+    <button class="tab-btn" id="tab-instr" onclick="switchTab('instr')">
+      <div class="tab-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <span class="tab-label">Инструкция</span>
+    </button>
+
+  </div>
+</div>
+
+<!-- Snackbar -->
+<div class="snackbar" id="snackbar">✅ Ключ скопирован!</div>
+</div><!-- /#app -->
+
+<script>
+  /* ══════════════════════════════════════
+     TELEGRAM MINI APP INIT
+  ══════════════════════════════════════ */
+  const tg = window.Telegram?.WebApp;
+
+  // Подставляем ссылку на бота из конфига
+  const botName = window.APP_CONFIG?.BOT_NAME ?? 'EbloVPN_bot';
+  const guardBtn  = document.getElementById('guard-btn');
+  const guardText = document.getElementById('guard-text');
+  guardBtn.href = `https://t.me/${botName}`;
+  guardText.textContent = `Это мини-приложение работает только внутри Telegram. Открой его через бота @${botName}`;
+
+  // Защита — показываем guard если открыто не в Telegram
+  if (!tg || !tg.initData) {
+    document.getElementById('tg-guard').classList.add('show');
+    document.getElementById('app').style.display = 'none';
+  } else {
+    // Расширяем на весь экран
+    tg.expand();
+    tg.ready();
+
+    // Применяем отступ сверху под кнопки Telegram
+    const safeTop = (tg.safeAreaInsets?.top ?? 0) + (tg.contentSafeAreaInsets?.top ?? 0);
+    if (safeTop > 0) {
+      document.getElementById('app').style.setProperty('--tg-safe-top', safeTop + 'px');
+    }
+
+    // Тема Telegram (подхватываем цвет фона если нужно)
+    if (tg.colorScheme === 'light') {
+      // при желании можно переключить тему
+    }
+
+    // Отправляем initData на бэкенд
+    authWithBackend(tg.initData);
+  }
+
+  async function authWithBackend(initData) {
+    // API_URL берётся из config.js (не коммитить в git!)
+    const apiUrl = window.APP_CONFIG?.API_URL;
+    if (!apiUrl) {
+      console.warn('[Eblo.VPN] API_URL не задан в config.js');
+      return;
+    }
+    try {
+      const res = await fetch(apiUrl + '/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ init_data: initData })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      console.log('[Eblo.VPN] Auth OK:', data);
+      // TODO: сохрани токен/данные пользователя и обнови UI
+    } catch (err) {
+      console.error('[Eblo.VPN] Auth error:', err);
+    }
+  }
+
+  /* ══════════════════════════════════════
+     TAB BAR
+  ══════════════════════════════════════ */
+  function movePill(tabBtn) {
+    const pill = document.getElementById('tab-pill');
+    const bar  = document.getElementById('tabbar');
+    const barRect = bar.getBoundingClientRect();
+    const btnRect = tabBtn.getBoundingClientRect();
+    pill.style.left  = (btnRect.left - barRect.left) + 'px';
+    pill.style.width = btnRect.width + 'px';
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    const activeBtn = document.getElementById('tab-' + name);
+    activeBtn.classList.add('active');
+    movePill(activeBtn);
+  }
+
+  // Init pill position on load (no transition on first render)
+  window.addEventListener('load', () => {
+    const pill = document.getElementById('tab-pill');
+    pill.style.transition = 'none';
+    const activeBtn = document.querySelector('.tab-btn.active');
+    if (activeBtn) movePill(activeBtn);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        pill.style.transition = '';
+      });
+    });
+  });
+
+  function toggleAcc(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.contains('open');
+    document.querySelectorAll('.accordion').forEach(a => a.classList.remove('open'));
+    if (!isOpen) el.classList.add('open');
+  }
+
+  function copyKey() {
+    const key = 'vless://EBL-04821-xKz9mPq@eblo.vpn:443?type=ws&security=tls#Eblo.VPN';
+    navigator.clipboard.writeText(key).catch(() => {});
+    showSnackbar('✅ Ключ скопирован!');
+  }
+
+  function openApp() {
+    showSnackbar('🚀 Открываю приложение...');
+  }
+
+  function openSupport() {
+    showSnackbar('💬 Переход в поддержку...');
+  }
+
+  function showSnackbar(msg) {
+    const s = document.getElementById('snackbar');
+    s.textContent = msg;
+    s.classList.add('show');
+    setTimeout(() => s.classList.remove('show'), 2200);
+  }
+</script>
+</body>
+</html>
