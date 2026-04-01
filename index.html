@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Eblo.VPN</title>
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="config.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -27,6 +30,45 @@
       color: var(--text);
       font-family: -apple-system, 'SF Pro Display', 'Segoe UI', sans-serif;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* Safe area для Telegram — отступ под кнопки TG */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding-top: var(--tg-safe-top, env(safe-area-inset-top, 0px));
+    }
+
+    /* Экран блокировки (открыт вне Telegram) */
+    #tg-guard {
+      display: none;
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 32px;
+      text-align: center;
+    }
+    #tg-guard.show { display: flex; }
+    .guard-icon { font-size: 56px; }
+    .guard-title {
+      font-size: 22px; font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .guard-text {
+      font-size: 15px; color: var(--muted); line-height: 1.5; max-width: 280px;
+    }
+    .guard-btn {
+      margin-top: 8px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 14px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      text-decoration: none; display: inline-block;
     }
 
     body {
@@ -455,6 +497,15 @@
 </head>
 <body>
 
+<!-- Блокировка вне Telegram -->
+<div id="tg-guard">
+  <div class="guard-icon">✈️</div>
+  <div class="guard-title">Только в Telegram</div>
+  <div class="guard-text" id="guard-text">Это мини-приложение работает только внутри Telegram.</div>
+  <a class="guard-btn" id="guard-btn" href="#">Открыть в Telegram</a>
+</div>
+
+<div id="app">
 <!-- Header -->
 <div class="header">
   <div class="header-logo">
@@ -804,8 +855,70 @@
 
 <!-- Snackbar -->
 <div class="snackbar" id="snackbar">✅ Ключ скопирован!</div>
+</div><!-- /#app -->
 
 <script>
+  /* ══════════════════════════════════════
+     TELEGRAM MINI APP INIT
+  ══════════════════════════════════════ */
+  const tg = window.Telegram?.WebApp;
+
+  // Подставляем ссылку на бота из конфига
+  const botName = window.APP_CONFIG?.BOT_NAME ?? 'EbloVPN_bot';
+  const guardBtn  = document.getElementById('guard-btn');
+  const guardText = document.getElementById('guard-text');
+  guardBtn.href = `https://t.me/${botName}`;
+  guardText.textContent = `Это мини-приложение работает только внутри Telegram. Открой его через бота @${botName}`;
+
+  // Защита — показываем guard если открыто не в Telegram
+  if (!tg || !tg.initData) {
+    document.getElementById('tg-guard').classList.add('show');
+    document.getElementById('app').style.display = 'none';
+  } else {
+    // Расширяем на весь экран
+    tg.expand();
+    tg.ready();
+
+    // Применяем отступ сверху под кнопки Telegram
+    const safeTop = (tg.safeAreaInsets?.top ?? 0) + (tg.contentSafeAreaInsets?.top ?? 0);
+    if (safeTop > 0) {
+      document.getElementById('app').style.setProperty('--tg-safe-top', safeTop + 'px');
+    }
+
+    // Тема Telegram (подхватываем цвет фона если нужно)
+    if (tg.colorScheme === 'light') {
+      // при желании можно переключить тему
+    }
+
+    // Отправляем initData на бэкенд
+    authWithBackend(tg.initData);
+  }
+
+  async function authWithBackend(initData) {
+    // API_URL берётся из config.js (не коммитить в git!)
+    const apiUrl = window.APP_CONFIG?.API_URL;
+    if (!apiUrl) {
+      console.warn('[Eblo.VPN] API_URL не задан в config.js');
+      return;
+    }
+    try {
+      const res = await fetch(apiUrl + '/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ init_data: initData })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      console.log('[Eblo.VPN] Auth OK:', data);
+      // TODO: сохрани токен/данные пользователя и обнови UI
+    } catch (err) {
+      console.error('[Eblo.VPN] Auth error:', err);
+    }
+  }
+
+  /* ══════════════════════════════════════
+     TAB BAR
+  ══════════════════════════════════════ */
   function movePill(tabBtn) {
     const pill = document.getElementById('tab-pill');
     const bar  = document.getElementById('tabbar');
