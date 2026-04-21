@@ -1797,6 +1797,9 @@
 
   // Ключ подписки — используется в copyKey, deeplink, Profile QR
   var VLESS_KEY = 'vless://EBL-04821-xKz9mPq@eblo.vpn:443?type=ws&security=tls#Eblo.VPN';
+  // Окружность кольца прогресса подписки (radius=34) — нужен setRingFill,
+  // которая вызывается рано через fillSubscriptionInfo при наличии ?expires=
+  var RING_CIRC = 2 * Math.PI * 34; // ≈ 213.63
 
   /* ══════════════════════════════════════
      INIT — параметры подписки из URL
@@ -1827,7 +1830,7 @@
     return 'дней';
   }
 
-  const RING_CIRC = 2 * Math.PI * 34; // ≈ 213.63
+  // RING_CIRC объявлен в самом начале скрипта
   // _subExpires, _countdownTimer объявлены в самом начале скрипта
 
   function setRingFill(pct) {
