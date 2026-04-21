@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Eblo.VPN</title>
   <script src="config.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <script src="qrcode.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -2037,11 +2037,18 @@
     `).join('');
   }
 
+  function resolveRelative(filename) {
+    const base = location.href.split('?')[0].split('#')[0];
+    const dir  = base.endsWith('/') ? base : base.replace(/[^/]*$/, '');
+    return dir + filename;
+  }
+
   async function loadMTProto() {
     const btn = document.getElementById('mt-refresh');
     btn?.classList.add('spinning');
     try {
-      const res = await fetch('mtproto.txt?_=' + Date.now());
+      const url = resolveRelative('mtproto.txt') + '?_=' + Date.now();
+      const res = await fetch(url);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const text = await res.text();
       _mtProxies = parseMTProto(text);
