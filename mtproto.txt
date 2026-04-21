@@ -1,0 +1,16 @@
+# Eblo.VPN — MTProto прокси для Telegram
+#
+# Формат: одна ссылка на строку. Строки с # — комментарии, пустые игнорируются.
+# Поддерживаются обе формы:
+#   https://t.me/proxy?server=IP&port=PORT&secret=HEX
+#   tg://proxy?server=IP&port=PORT&secret=HEX
+#
+# Можно добавить своё имя через вертикальную черту:
+#   Amsterdam | https://t.me/proxy?server=1.2.3.4&port=443&secret=ee...
+#
+# Если имя не указано — подставится IP.
+# Файл читается при открытии вкладки MTProto (и по кнопке обновления).
+
+# Пример (удали или замени на реальные):
+Amsterdam | https://t.me/proxy?server=185.123.45.67&port=443&secret=ee000102030405060708090a0b0c0d0e0f
+Frankfurt | https://t.me/proxy?server=5.6.7.8&port=443&secret=ee112233445566778899aabbccddeeff

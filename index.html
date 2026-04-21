@@ -31,6 +31,45 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Safe area для Telegram — отступ под кнопки TG */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      padding-top: var(--tg-safe-top, env(safe-area-inset-top, 0px));
+    }
+
+    /* Экран блокировки (открыт вне Telegram) */
+    #tg-guard {
+      display: none;
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 32px;
+      text-align: center;
+    }
+    #tg-guard.show { display: flex; }
+    .guard-icon { font-size: 56px; }
+    .guard-title {
+      font-size: 22px; font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .guard-text {
+      font-size: 15px; color: var(--muted); line-height: 1.5; max-width: 280px;
+    }
+    .guard-btn {
+      margin-top: 8px;
+      padding: 14px 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; border-radius: 14px;
+      font-size: 15px; font-weight: 600; cursor: pointer;
+      text-decoration: none; display: inline-block;
+    }
+
     body {
       display: flex;
       flex-direction: column;
@@ -109,6 +148,217 @@
       background: var(--accent2);
       flex-shrink: 0;
     }
+    .beta-badge {
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      background: linear-gradient(135deg, #ff6b6b, #ffa500);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 5px;
+      text-transform: uppercase;
+      box-shadow: 0 0 10px rgba(255,107,107,0.35);
+      align-self: flex-start;
+      margin-top: 2px;
+    }
+
+    /* ── VPN info card ── */
+    .feature-list { display: flex; flex-direction: column; gap: 14px; }
+    .feat { display: flex; gap: 12px; align-items: flex-start; }
+    .feat-ico {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .feat-title {
+      font-size: 13px; font-weight: 700;
+      letter-spacing: -0.1px; line-height: 1.3;
+    }
+    .feat-text {
+      font-size: 12px; color: var(--muted);
+      line-height: 1.45; margin-top: 3px;
+    }
+
+    /* Beta notice strip */
+    .beta-strip {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(255,165,0,0.08);
+      border: 1px solid rgba(255,165,0,0.28);
+      border-radius: 12px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 12px; color: rgba(255,165,0,0.95);
+      line-height: 1.4;
+    }
+    .beta-strip-ico { font-size: 16px; flex-shrink: 0; }
+
+    /* ── Profile QR card ── */
+    .profile-qr-card {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 14px;
+      text-align: center;
+    }
+    .profile-qr-title {
+      font-size: 14px; font-weight: 700;
+      letter-spacing: -0.1px;
+    }
+    .profile-qr-box {
+      width: 240px; height: 240px;
+      background: #fff;
+      border-radius: 16px;
+      padding: 10px;
+      box-shadow: 0 8px 26px rgba(0,0,0,0.35);
+    }
+    .profile-qr-box svg { width: 100%; height: 100%; display: block; }
+    .profile-qr-text {
+      font-size: 12px; color: var(--muted);
+      line-height: 1.45;
+      max-width: 260px;
+    }
+
+    /* ── MTProto page ── */
+    .mt-hero {
+      position: relative;
+      display: flex; align-items: center; gap: 14px;
+      background: linear-gradient(135deg, rgba(42,136,224,0.18) 0%, rgba(42,136,224,0.06) 100%);
+      border: 1px solid rgba(42,136,224,0.3);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+    .mt-hero::before {
+      content: '';
+      position: absolute;
+      top: -60%; right: -20%;
+      width: 60%; height: 220%;
+      background: radial-gradient(ellipse, rgba(42,136,224,0.25) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .mt-hero-icon {
+      width: 48px; height: 48px;
+      background: linear-gradient(135deg, #2a88e0, #1e6db8);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      box-shadow: 0 6px 20px rgba(42,136,224,0.45);
+      animation: mtBob 3s ease-in-out infinite;
+      position: relative;
+    }
+    @keyframes mtBob {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-4px); }
+    }
+    .mt-hero-title { font-size: 16px; font-weight: 700; margin-bottom: 2px; position: relative; }
+    .mt-hero-text  { font-size: 12px; color: rgba(255,255,255,0.7); line-height: 1.4; position: relative; }
+
+    .mt-actions {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .mt-actions-title { font-size: 13px; font-weight: 600; color: var(--muted); }
+
+    .proxy-card {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      transition: border-color .15s, transform .1s;
+    }
+    .proxy-card:active { transform: scale(.99); }
+    .proxy-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, rgba(42,136,224,0.25), rgba(42,136,224,0.08));
+      border: 1px solid rgba(42,136,224,0.3);
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .proxy-info { flex: 1; min-width: 0; }
+    .proxy-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .proxy-server {
+      font-size: 11px; color: var(--muted);
+      font-family: 'SF Mono', Menlo, monospace;
+      margin-top: 3px;
+    }
+    .proxy-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .proxy-btn {
+      width: 34px; height: 34px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color .15s, border-color .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .proxy-btn:hover { color: var(--accent2); border-color: rgba(108,99,255,0.35); }
+    .proxy-btn:active { transform: scale(.92); }
+    .proxy-btn svg { width: 16px; height: 16px; }
+
+    .mt-empty {
+      text-align: center; padding: 40px 16px;
+      color: var(--muted); font-size: 13px; line-height: 1.5;
+    }
+    .mt-empty-ico { font-size: 36px; margin-bottom: 10px; display: block; opacity: .7; }
+
+    /* ── QR modal ── */
+    .qr-modal {
+      position: fixed; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      z-index: 500;
+      padding: 20px;
+    }
+    .qr-modal.show { display: flex; animation: qrFadeIn .2s ease-out; }
+    @keyframes qrFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .qr-modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .qr-modal-content {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 20px 20px;
+      max-width: 320px; width: 100%;
+      text-align: center;
+      animation: qrPop .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes qrPop {
+      from { transform: scale(.9); opacity: 0; }
+      to   { transform: scale(1);  opacity: 1; }
+    }
+    .qr-modal-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; letter-spacing: -0.2px; }
+    .qr-modal-qr {
+      width: 240px; height: 240px;
+      background: #fff;
+      border-radius: 14px;
+      padding: 12px;
+      margin: 0 auto 14px;
+    }
+    .qr-modal-qr svg { width: 100%; height: 100%; display: block; }
+    .qr-modal-text {
+      font-size: 10px; color: var(--muted);
+      word-break: break-all;
+      margin-bottom: 14px;
+      max-height: 48px;
+      overflow-y: auto;
+      font-family: 'SF Mono', Menlo, monospace;
+      line-height: 1.4;
+    }
+    .qr-modal-btn-row { display: flex; gap: 8px; }
+    .qr-modal-btn-row .btn { margin: 0; flex: 1; }
 
     /* ── Pages ── */
     .pages-wrap {
@@ -182,6 +432,157 @@
     .sub-row-value.green { color: var(--green); }
     .sub-row-value.accent { color: var(--accent2); }
 
+    /* Enhanced subscription hero */
+    .sub-card-body {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 16px;
+      position: relative; z-index: 1;
+    }
+    .sub-card-left { flex: 1; min-width: 0; }
+    .sub-muted {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .sub-plan {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      line-height: 1.1;
+      margin-top: 4px;
+      background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.78) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sub-expires-line {
+      font-size: 12.5px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.6);
+      margin-top: 10px;
+      line-height: 1.4;
+    }
+
+    /* Progress ring */
+    .sub-ring-wrap { position: relative; width: 92px; height: 92px; flex-shrink: 0; }
+    .sub-ring-wrap svg {
+      width: 100%; height: 100%;
+      transform: rotate(-90deg);
+    }
+    .sub-ring-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.08);
+      stroke-width: 5;
+    }
+    .sub-ring-fg {
+      fill: none;
+      stroke: url(#sub-ring-grad);
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-dasharray: 213.63;
+      transition: stroke-dashoffset 1.4s cubic-bezier(.22,.68,.42,1.01);
+      filter: drop-shadow(0 0 8px rgba(167,139,250,0.55));
+    }
+    .sub-ring-center {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .sub-ring-num {
+      font-size: 24px; font-weight: 800; line-height: 1;
+      background: linear-gradient(180deg, #fff, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sub-ring-unit {
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* Stats grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .stat-tile {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 8px 11px;
+      text-align: center;
+      transition: border-color .15s, transform .1s;
+    }
+    .stat-tile:active { transform: scale(.97); border-color: rgba(108,99,255,0.35); }
+    .stat-tile-icon { font-size: 18px; display: block; margin-bottom: 4px; opacity: .85; }
+    .stat-tile-value {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .stat-tile-label {
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 3px;
+      font-weight: 600;
+    }
+
+    /* Referral card */
+    .refer-card {
+      position: relative;
+      background: linear-gradient(135deg, rgba(255,182,73,0.15) 0%, rgba(255,107,107,0.08) 100%);
+      border: 1px solid rgba(255,182,73,0.28);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-top: 4px;
+      display: flex; align-items: center; gap: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .1s, border-color .2s;
+    }
+    .refer-card:active { transform: scale(.98); border-color: rgba(255,182,73,0.5); }
+    .refer-card::before {
+      content: '';
+      position: absolute;
+      top: -40%; right: -15%;
+      width: 150px; height: 150px;
+      background: radial-gradient(circle, rgba(255,182,73,0.22) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .refer-emoji {
+      font-size: 30px; flex-shrink: 0;
+      filter: drop-shadow(0 0 10px rgba(255,182,73,0.4));
+      animation: giftBob 2.6s ease-in-out infinite;
+      position: relative; z-index: 1;
+    }
+    @keyframes giftBob {
+      0%, 100% { transform: translateY(0)    rotate(-5deg); }
+      50%      { transform: translateY(-4px) rotate(5deg); }
+    }
+    .refer-content { position: relative; z-index: 1; flex: 1; min-width: 0; }
+    .refer-title { font-size: 14px; font-weight: 700; letter-spacing: -0.1px; }
+    .refer-text  { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+    .refer-arrow {
+      font-size: 20px;
+      color: rgba(255,255,255,0.4);
+      transition: transform .25s, color .2s;
+      position: relative; z-index: 1;
+      flex-shrink: 0;
+    }
+    .refer-card:active .refer-arrow { transform: translateX(4px); color: rgba(255,255,255,0.9); }
+
     /* ── Buttons ── */
     .btn {
       width: 100%;
@@ -215,16 +616,44 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px 18px;
+      padding: 14px 16px;
       margin-bottom: 10px;
       display: flex; align-items: center; gap: 14px;
-      transition: border-color .2s;
+      transition: border-color .2s, transform .1s, box-shadow .2s;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
     }
     .server-card:hover { border-color: rgba(108,99,255,0.35); }
+    .server-card:active { transform: scale(.99); }
+    .server-card.hidden { display: none; }
     .server-flag { font-size: 28px; line-height: 1; flex-shrink: 0; }
     .server-info { flex: 1; min-width: 0; }
     .server-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .server-location { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .server-load-mini {
+      display: flex; align-items: center; gap: 8px;
+      margin-top: 6px;
+    }
+    .server-load-bar {
+      flex: 1;
+      max-width: 110px;
+      height: 3px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .server-load-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green) 0%, #facc15 65%, #f87171 100%);
+      border-radius: 2px;
+      transition: width .8s cubic-bezier(.22,.68,.42,1);
+    }
+    .server-load-text {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
     .server-ping { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; }
     .ping-val { font-size: 13px; font-weight: 700; }
     .ping-val.good { color: var(--green); }
@@ -236,117 +665,409 @@
     .ping-bar.active { background: var(--green); }
     .ping-bar.active.ok { background: #facc15; }
 
-    /* ── Devices ── */
-    .devices-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-    .devices-title { font-size: 20px; font-weight: 700; }
-    .device-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+    /* Best server recommendation hero */
+    .best-server {
+      position: relative;
+      background: linear-gradient(135deg, rgba(34,197,94,0.13) 0%, rgba(108,99,255,0.06) 100%);
+      border: 1px solid rgba(34,197,94,0.3);
       border-radius: var(--radius);
-      padding: 16px 18px;
-      margin-bottom: 10px;
-      display: flex; align-items: center; gap: 14px;
-    }
-    .device-icon-wrap {
-      width: 44px; height: 44px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
-    }
-    .device-info { flex: 1; min-width: 0; }
-    .device-name { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .device-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
-    .device-status {
-      width: 9px; height: 9px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .device-status.online { background: var(--green); box-shadow: 0 0 6px rgba(34,197,94,.5); }
-    .device-status.offline { background: var(--muted); }
-    .devices-limit {
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      margin-bottom: 12px;
-    }
-    .devices-limit-label { font-size: 13px; color: var(--muted); }
-    .devices-limit-val { font-size: 14px; font-weight: 700; color: var(--accent2); }
-    .progress-bar-wrap {
-      background: var(--surface2);
-      border-radius: 4px;
-      height: 6px;
-      margin-top: 8px;
+      padding: 16px;
+      margin-bottom: 14px;
       overflow: hidden;
     }
-    .progress-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    .best-server::before {
+      content: '';
+      position: absolute;
+      top: -50%; right: -20%;
+      width: 60%; height: 200%;
+      background: radial-gradient(ellipse, rgba(34,197,94,0.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .best-server-label {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.7px; text-transform: uppercase;
+      color: var(--green);
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.35);
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .best-server-body { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; position: relative; }
+    .best-server-flag { font-size: 40px; line-height: 1; flex-shrink: 0; filter: drop-shadow(0 4px 10px rgba(0,0,0,.3)); }
+    .best-server-info { flex: 1; min-width: 0; }
+    .best-server-name { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; }
+    .best-server-meta {
+      display: flex; align-items: center; gap: 10px;
+      margin-top: 4px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+    }
+    .best-server-meta .good { color: var(--green); font-weight: 600; }
+    .best-server-meta .dot {
+      width: 3px; height: 3px; border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+    }
+    .best-server-btn {
+      position: relative;
+      width: 100%;
+      padding: 12px 14px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 16px rgba(34,197,94,0.35);
+      transition: transform .1s, box-shadow .2s;
+    }
+    .best-server-btn:active { transform: scale(.98); box-shadow: 0 2px 8px rgba(34,197,94,0.3); }
+
+    /* Search */
+    .servers-search { position: relative; margin-bottom: 10px; }
+    .servers-search input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 14px 11px 40px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .15s, background .15s;
+    }
+    .servers-search input::placeholder { color: var(--muted); }
+    .servers-search input:focus {
+      border-color: rgba(108,99,255,0.45);
+      background: var(--surface2);
+    }
+    .servers-search-ico {
+      position: absolute;
+      left: 13px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      pointer-events: none;
+      display: flex;
     }
 
+    /* Filter chips */
+    .chips-row {
+      display: flex; gap: 6px;
+      margin-bottom: 14px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .chips-row::-webkit-scrollbar { display: none; }
+    .chip {
+      padding: 6px 13px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s, color .15s, border-color .15s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+      flex-shrink: 0;
+    }
+    .chip:active { transform: scale(.95); }
+    .chip.active {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 2px 10px rgba(108,99,255,0.3);
+    }
+
+    /* Refresh pings */
+    .refresh-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted);
+      cursor: pointer;
+      transition: color .15s, border-color .15s, background .15s;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .refresh-btn:hover, .refresh-btn:active { color: var(--accent2); border-color: rgba(108,99,255,0.35); }
+    .refresh-btn svg { width: 18px; height: 18px; transition: transform .3s; }
+    .refresh-btn.spinning svg { animation: spin360 .9s linear infinite; }
+    @keyframes spin360 { to { transform: rotate(360deg); } }
+
+    /* Empty state */
+    .no-servers {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--muted);
+      font-size: 13px;
+      display: none;
+    }
+    .no-servers.show { display: block; }
+
     /* ── Instructions ── */
-    .instr-title { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
-    .instr-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
-    .accordion { margin-bottom: 10px; }
-    .acc-header {
+    /* Hero */
+    .instr-hero {
+      position: relative;
+      display: flex; align-items: center; gap: 16px;
+      background: linear-gradient(135deg, rgba(108,99,255,0.18) 0%, rgba(167,139,250,0.08) 60%, transparent 100%);
+      border: 1px solid rgba(167,139,250,0.25);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 14px;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .instr-hero::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 160%; height: 160%;
+      transform: translate(-50%, -50%);
+      background: conic-gradient(from 0deg,
+        transparent 0deg,
+        rgba(167,139,250,0.35) 60deg,
+        transparent 120deg,
+        transparent 360deg);
+      animation: spin 7s linear infinite;
+      filter: blur(22px);
+      opacity: 0.55;
+      z-index: -1;
+    }
+    .instr-hero-icon {
+      width: 54px; height: 54px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 15px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+      box-shadow: 0 6px 22px rgba(108,99,255,0.5);
+      animation: heroPulse 2.8s ease-in-out infinite;
+    }
+    .instr-hero-title { font-size: 17px; font-weight: 700; letter-spacing: -0.2px; margin-bottom: 3px; }
+    .instr-hero-text { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+    @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+    @keyframes heroPulse {
+      0%, 100% { transform: scale(1);    box-shadow: 0 6px 22px rgba(108,99,255,0.5); }
+      50%      { transform: scale(1.06); box-shadow: 0 6px 32px rgba(167,139,250,0.7); }
+    }
+
+    /* Auto-detect banner */
+    .instr-detect {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: rgba(34,197,94,0.09);
+      border: 1px solid rgba(34,197,94,0.28);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--green);
+    }
+    .instr-detect.show { display: flex; animation: slideIn .5s cubic-bezier(.34,1.56,.64,1); }
+    .instr-detect-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 10px rgba(34,197,94,.8);
+      animation: pulse 1.6s infinite; flex-shrink: 0;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Accordion */
+    .accordion {
+      position: relative;
+      margin-bottom: 10px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px 18px;
-      display: flex; align-items: center; gap: 12px;
+      overflow: hidden;
+      transition: border-color .25s, background .2s, box-shadow .3s;
+    }
+    .accordion.open {
+      border-color: rgba(108,99,255,0.28);
+      background: linear-gradient(180deg, rgba(108,99,255,0.06) 0%, var(--surface) 60%);
+      box-shadow: 0 0 0 1px rgba(108,99,255,0.22), 0 10px 30px rgba(108,99,255,0.14);
+      animation: accGlow 3.2s ease-in-out infinite;
+    }
+    @keyframes accGlow {
+      0%, 100% { box-shadow: 0 0 0 1px rgba(108,99,255,0.22), 0 10px 30px rgba(108,99,255,0.14); }
+      50%      { box-shadow: 0 0 0 1px rgba(167,139,250,0.45), 0 12px 40px rgba(167,139,250,0.26); }
+    }
+    .accordion.detected { border-color: rgba(167,139,250,0.42); }
+
+    .acc-header {
+      padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
       cursor: pointer; user-select: none;
-      transition: background .15s;
+      -webkit-tap-highlight-color: transparent;
     }
-    .acc-header:hover { background: var(--surface2); }
-    .accordion.open .acc-header {
-      border-radius: var(--radius) var(--radius) 0 0;
-      border-bottom-color: transparent;
+    .acc-platform { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
+    .acc-right    { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+    .acc-badge {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.3px;
+      color: var(--muted);
       background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 3px 9px; border-radius: 8px;
+      white-space: nowrap;
     }
-    .acc-icon { font-size: 22px; flex-shrink: 0; }
-    .acc-label { flex: 1; font-size: 16px; font-weight: 600; }
-    .acc-arrow {
-      width: 22px; height: 22px;
-      border-radius: 50%;
-      background: var(--surface2);
+    .acc-your-chip {
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.8px; text-transform: uppercase;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      padding: 3px 8px; border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(108,99,255,0.4);
+    }
+    .acc-icon-wrap {
+      width: 38px; height: 38px;
+      border-radius: 11px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 11px;
-      transition: transform .25s, background .15s;
+      font-size: 20px; flex-shrink: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+    .acc-icon-wrap.mac { background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04)); border-color: rgba(255,255,255,0.15); }
+    .acc-icon-wrap.win { background: linear-gradient(135deg, rgba(0,120,215,0.25), rgba(0,120,215,0.08)); border-color: rgba(0,120,215,0.35); }
+    .acc-icon-wrap.android { background: linear-gradient(135deg, rgba(61,220,132,0.25), rgba(61,220,132,0.08)); border-color: rgba(61,220,132,0.35); }
+    .acc-icon-wrap.ios { background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(108,99,255,0.08)); border-color: rgba(167,139,250,0.35); }
+
+    .acc-label { font-size: 16px; font-weight: 600; letter-spacing: -0.1px; }
+
+    .acc-chevron {
+      width: 18px; height: 18px;
+      color: var(--muted);
+      transition: transform .3s cubic-bezier(.4,0,.2,1), color .2s;
       flex-shrink: 0;
     }
-    .accordion.open .acc-header .acc-arrow {
+    .accordion.open .acc-chevron {
       transform: rotate(180deg);
-      background: rgba(108,99,255,0.25);
+      color: var(--accent2);
     }
+
     .acc-body {
-      max-height: 0; overflow: hidden;
-      transition: max-height .35s cubic-bezier(.4,0,.2,1);
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-top: none;
-      border-radius: 0 0 var(--radius) var(--radius);
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .4s cubic-bezier(.4,0,.2,1);
     }
-    .accordion.open .acc-body { max-height: 600px; }
-    .acc-content { padding: 16px 18px 18px; }
-    .step { display: flex; gap: 12px; margin-bottom: 14px; }
-    .step:last-child { margin-bottom: 0; }
-    .step-num {
-      width: 24px; height: 24px;
+    .accordion.open .acc-body { max-height: 800px; }
+    .acc-content {
+      padding: 4px 18px 18px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+      padding-top: 16px;
+    }
+
+    .acc-subheading {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .acc-subheading + .acc-subheading,
+    .app-list + .acc-subheading,
+    .acc-actions + .acc-subheading { margin-top: 18px; }
+
+    .acc-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+    .acc-actions .btn {
+      margin: 0;
+      padding: 12px 12px;
+      font-size: 13px;
+      flex: 1;
+    }
+    .acc-actions .btn-primary { flex: 1.6; }
+    .acc-actions .btn span { font-size: 15px; }
+
+    .app-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .app-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 7px 13px 7px 10px;
+      border-radius: 999px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background .15s, border-color .15s, transform .1s;
+    }
+    .app-pill:hover { background: rgba(108,99,255,0.1); border-color: rgba(108,99,255,0.3); }
+    .app-pill:active { transform: scale(.96); }
+    .app-pill .app-ico { font-size: 15px; line-height: 1; }
+
+    .steps {
+      list-style: none;
+      counter-reset: step;
+      padding: 0; margin: 0;
+    }
+    .steps li {
+      counter-increment: step;
+      position: relative;
+      display: flex;
+      gap: 12px;
+      padding: 8px 0 8px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: rgba(255,255,255,0.82);
+    }
+    .steps li::before {
+      content: counter(step);
+      flex-shrink: 0;
+      width: 22px; height: 22px;
       background: linear-gradient(135deg, var(--accent), var(--accent2));
       border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; flex-shrink: 0;
+      font-size: 11px; font-weight: 700; color: #fff;
+      margin-top: 1px;
+      box-shadow: 0 2px 6px rgba(108,99,255,0.3);
     }
-    .step-text {
-      font-size: 13px; line-height: 1.5;
-      color: rgba(255,255,255,0.85); padding-top: 3px;
+    .steps li:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 11px;
+      top: 32px;
+      bottom: -2px;
+      width: 1px;
+      background: linear-gradient(180deg, rgba(108,99,255,0.35), transparent);
     }
-    .step-text strong { color: #fff; }
-    .step-text a { color: var(--accent2); text-decoration: none; }
+    .steps li strong { color: #fff; font-weight: 600; }
+
+    /* Cascade reveal шагов при открытии */
+    .accordion.open .steps li {
+      animation: stepIn .45s cubic-bezier(.34, 1.56, .64, 1) both;
+    }
+    .accordion.open .steps li:nth-child(1) { animation-delay: .05s; }
+    .accordion.open .steps li:nth-child(2) { animation-delay: .12s; }
+    .accordion.open .steps li:nth-child(3) { animation-delay: .19s; }
+    .accordion.open .steps li:nth-child(4) { animation-delay: .26s; }
+    .accordion.open .acc-actions { animation: stepIn .4s ease-out both; }
+    .accordion.open .app-list    { animation: stepIn .4s ease-out both; animation-delay: .05s; }
+    @keyframes stepIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
 
     /* ══ TAB BAR — Liquid Glass + sliding pill ══ */
     .tabbar-wrap {
@@ -392,11 +1113,18 @@
         0 2px 14px rgba(0,0,0,0.28),
         inset 0 1px 0 rgba(255,255,255,0.22),
         inset 0 -1px 0 rgba(0,0,0,0.12);
-      transition: left 0.38s cubic-bezier(0.34, 1.56, 0.64, 1),
-                  width 0.38s cubic-bezier(0.34, 1.56, 0.64, 1);
-      pointer-events: none;
-      z-index: 0;
+      transition: left 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  width 0.42s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transform-origin: center;
+      will-change: left, width, transform;
+      z-index: 2;
+      cursor: grab;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
     }
+    .tab-pill.dragging { cursor: grabbing; }
 
     .tab-btn {
       flex: 1;
@@ -457,11 +1185,21 @@
 </head>
 <body>
 
+<!-- Блокировка без UUID подписки -->
+<div id="tg-guard">
+  <div class="guard-icon">🔑</div>
+  <div class="guard-title">Открой через бота</div>
+  <div class="guard-text" id="guard-text">Открой это мини-приложение по ссылке из бота.</div>
+  <a class="guard-btn" id="guard-btn" href="#">Перейти к боту</a>
+</div>
+
+<div id="app">
 <!-- Header -->
 <div class="header">
   <div class="header-logo">
     <div class="logo-icon">🔒</div>
     <span class="logo-name">Eblo.VPN</span>
+    <span class="beta-badge">BETA</span>
   </div>
   <div class="header-right">
     <button class="support-btn" onclick="openSupport()">
@@ -480,30 +1218,102 @@
 
   <!-- ══ PROFILE ══ -->
   <div class="page active" id="page-profile">
-    <div class="sub-section-title">Подписка</div>
+
+    <div class="beta-strip">
+      <span class="beta-strip-ico">⚠️</span>
+      <span>Приложение в бета-тесте — часть функций пока может работать криво</span>
+    </div>
+
+    <!-- Subscription hero + ring -->
     <div class="sub-card">
       <div class="sub-badge">⚡ Premium</div>
-      <div class="sub-rows">
-        <div class="sub-row">
-          <span class="sub-row-label">Тип подписки</span>
-          <span class="sub-row-value accent">Premium Pro</span>
+      <div class="sub-card-body">
+        <div class="sub-card-left">
+          <div class="sub-plan" id="val-type">Premium Pro</div>
+          <div class="sub-expires-line" id="val-expires">активна до 22 апреля 2026</div>
         </div>
-        <div class="sub-row">
-          <span class="sub-row-label">Осталось</span>
-          <span class="sub-row-value green">23 дня</span>
-        </div>
-        <div class="sub-row">
-          <span class="sub-row-label">Дата окончания</span>
-          <span class="sub-row-value">22 апреля 2026</span>
+        <div class="sub-ring-wrap">
+          <svg viewBox="0 0 80 80" aria-hidden="true">
+            <defs>
+              <linearGradient id="sub-ring-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%"  stop-color="#a78bfa"/>
+                <stop offset="100%" stop-color="#6c63ff"/>
+              </linearGradient>
+            </defs>
+            <circle class="sub-ring-bg" cx="40" cy="40" r="34"/>
+            <circle class="sub-ring-fg" id="sub-ring" cx="40" cy="40" r="34" style="stroke-dashoffset:49"/>
+          </svg>
+          <div class="sub-ring-center">
+            <div class="sub-ring-num" id="ring-num">23</div>
+            <div class="sub-ring-unit" id="ring-unit">дней</div>
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- Quick stats -->
+    <div class="stats-grid">
+      <div class="stat-tile">
+        <span class="stat-tile-icon">🌍</span>
+        <div class="stat-tile-value">6</div>
+        <div class="stat-tile-label">стран</div>
+      </div>
+      <div class="stat-tile">
+        <span class="stat-tile-icon">📶</span>
+        <div class="stat-tile-value">∞</div>
+        <div class="stat-tile-label">трафик</div>
+      </div>
+    </div>
+
     <button class="btn btn-copy" onclick="copyKey()">
       <span>📋</span> Скопировать ключ
     </button>
     <button class="btn btn-primary" onclick="openApp()">
       <span>🚀</span> Перейти в приложение
     </button>
+
+    <!-- QR ключа — сразу на виду -->
+    <div class="card profile-qr-card">
+      <div class="profile-qr-title">QR ключа подписки</div>
+      <div class="profile-qr-box" id="profile-qr"></div>
+      <div class="profile-qr-text">Наведи камеру с другого устройства — ключ импортируется в VPN-приложение сам</div>
+    </div>
+
+    <!-- Как работает VPN -->
+    <div class="card">
+      <div class="card-label">Как работает Eblo.VPN</div>
+      <div class="feature-list">
+        <div class="feat">
+          <div class="feat-ico">🔗</div>
+          <div>
+            <div class="feat-title">Каскадное подключение</div>
+            <div class="feat-text">Трафик идёт через цепочку серверов — РКН не видит, куда он улетает дальше</div>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="feat-ico">🧠</div>
+          <div>
+            <div class="feat-title">Умные фильтры трафика</div>
+            <div class="feat-text">На серверах правила: блокировки гоним через туннель, остальное — напрямую. Поэтому быстрее</div>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="feat-ico">🛡</div>
+          <div>
+            <div class="feat-title">Reality + AES-256</div>
+            <div class="feat-text">TLS-маскировка делает трафик неотличимым от обычного HTTPS — DPI не ловит</div>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="feat-ico">🚫</div>
+          <div>
+            <div class="feat-title">Без логов</div>
+            <div class="feat-text">Не храним что, куда, когда — и не можем выдать даже по очень страстной просьбе</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card" style="margin-top:4px;">
       <div class="card-label">Аккаунт</div>
       <div class="sub-rows">
@@ -511,248 +1321,402 @@
           <span class="sub-row-label">ID</span>
           <span class="sub-row-value" style="font-family:monospace;font-size:13px">#EBL-04821</span>
         </div>
-        <div class="sub-row">
-          <span class="sub-row-label">Устройств</span>
-          <span class="sub-row-value">2 / 5</span>
-        </div>
-        <div class="sub-row">
-          <span class="sub-row-label">Трафик</span>
-          <span class="sub-row-value green">∞ Безлимит</span>
-        </div>
       </div>
     </div>
+
+    <div class="refer-card" onclick="openReferral()">
+      <div class="refer-emoji">🎁</div>
+      <div class="refer-content">
+        <div class="refer-title">Приведи друга</div>
+        <div class="refer-text">Получи +30 дней за каждого</div>
+      </div>
+      <div class="refer-arrow">→</div>
+    </div>
+
   </div>
 
   <!-- ══ SERVERS ══ -->
   <div class="page" id="page-servers">
     <div class="servers-header">
       <div class="servers-title">Серверы</div>
-      <span class="servers-count">6 онлайн</span>
-    </div>
-    <div class="server-card">
-      <div class="server-flag">🇩🇪</div>
-      <div class="server-info">
-        <div class="server-name">Frankfurt #1</div>
-        <div class="server-location">Германия, EU</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="servers-count">6 онлайн</span>
+        <button class="refresh-btn" id="refresh-btn" onclick="refreshPings()" aria-label="Обновить пинги">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
       </div>
-      <div class="server-ping">
-        <span class="ping-val good">18 мс</span>
-        <span class="ping-label">пинг</span>
-        <div class="ping-bars">
-          <div class="ping-bar active" style="height:6px"></div>
-          <div class="ping-bar active" style="height:9px"></div>
-          <div class="ping-bar active" style="height:13px"></div>
-          <div class="ping-bar active" style="height:17px"></div>
+    </div>
+
+    <!-- Recommended server -->
+    <div class="best-server">
+      <div class="best-server-label">🎯 Лучший для тебя</div>
+      <div class="best-server-body">
+        <div class="best-server-flag">🇩🇪</div>
+        <div class="best-server-info">
+          <div class="best-server-name">Frankfurt #1</div>
+          <div class="best-server-meta">
+            <span class="good">18 мс</span>
+            <span class="dot"></span>
+            <span>23% загрузка</span>
+            <span class="dot"></span>
+            <span>Германия</span>
+          </div>
+        </div>
+      </div>
+      <button class="best-server-btn" onclick="connectServer('Frankfurt #1')">
+        <span>⚡</span> Подключиться
+      </button>
+    </div>
+
+    <!-- Search -->
+    <div class="servers-search">
+      <span class="servers-search-ico">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </span>
+      <input id="servers-search" type="text" placeholder="Поиск по названию или стране" oninput="filterServers()"/>
+    </div>
+
+    <!-- Region filter chips -->
+    <div class="chips-row">
+      <div class="chip active" data-region="all" onclick="setRegion(this)">Все</div>
+      <div class="chip" data-region="eu"    onclick="setRegion(this)">🇪🇺 Европа</div>
+      <div class="chip" data-region="na"    onclick="setRegion(this)">🌎 Америка</div>
+      <div class="chip" data-region="asia"  onclick="setRegion(this)">🌏 Азия</div>
+    </div>
+
+    <div id="servers-list">
+      <div class="server-card" data-region="eu" onclick="connectServer('Frankfurt #1')">
+        <div class="server-flag">🇩🇪</div>
+        <div class="server-info">
+          <div class="server-name">Frankfurt #1</div>
+          <div class="server-location">Германия · EU</div>
+          <div class="server-load-mini">
+            <div class="server-load-bar"><div class="server-load-fill" style="width:23%"></div></div>
+            <span class="server-load-text">23%</span>
+          </div>
+        </div>
+        <div class="server-ping">
+          <span class="ping-val good">18 мс</span>
+          <span class="ping-label">пинг</span>
+          <div class="ping-bars">
+            <div class="ping-bar active" style="height:6px"></div>
+            <div class="ping-bar active" style="height:9px"></div>
+            <div class="ping-bar active" style="height:13px"></div>
+            <div class="ping-bar active" style="height:17px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="server-card" data-region="eu" onclick="connectServer('Amsterdam #1')">
+        <div class="server-flag">🇳🇱</div>
+        <div class="server-info">
+          <div class="server-name">Amsterdam #1</div>
+          <div class="server-location">Нидерланды · EU</div>
+          <div class="server-load-mini">
+            <div class="server-load-bar"><div class="server-load-fill" style="width:41%"></div></div>
+            <span class="server-load-text">41%</span>
+          </div>
+        </div>
+        <div class="server-ping">
+          <span class="ping-val good">24 мс</span>
+          <span class="ping-label">пинг</span>
+          <div class="ping-bars">
+            <div class="ping-bar active" style="height:6px"></div>
+            <div class="ping-bar active" style="height:9px"></div>
+            <div class="ping-bar active" style="height:13px"></div>
+            <div class="ping-bar" style="height:17px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="server-card" data-region="eu" onclick="connectServer('Helsinki #1')">
+        <div class="server-flag">🇫🇮</div>
+        <div class="server-info">
+          <div class="server-name">Helsinki #1</div>
+          <div class="server-location">Финляндия · EU</div>
+          <div class="server-load-mini">
+            <div class="server-load-bar"><div class="server-load-fill" style="width:35%"></div></div>
+            <span class="server-load-text">35%</span>
+          </div>
+        </div>
+        <div class="server-ping">
+          <span class="ping-val good">31 мс</span>
+          <span class="ping-label">пинг</span>
+          <div class="ping-bars">
+            <div class="ping-bar active" style="height:6px"></div>
+            <div class="ping-bar active" style="height:9px"></div>
+            <div class="ping-bar active" style="height:13px"></div>
+            <div class="ping-bar" style="height:17px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="server-card" data-region="eu" onclick="connectServer('London #1')">
+        <div class="server-flag">🇬🇧</div>
+        <div class="server-info">
+          <div class="server-name">London #1</div>
+          <div class="server-location">Великобритания · EU</div>
+          <div class="server-load-mini">
+            <div class="server-load-bar"><div class="server-load-fill" style="width:58%"></div></div>
+            <span class="server-load-text">58%</span>
+          </div>
+        </div>
+        <div class="server-ping">
+          <span class="ping-val ok">47 мс</span>
+          <span class="ping-label">пинг</span>
+          <div class="ping-bars">
+            <div class="ping-bar active ok" style="height:6px"></div>
+            <div class="ping-bar active ok" style="height:9px"></div>
+            <div class="ping-bar active ok" style="height:13px"></div>
+            <div class="ping-bar" style="height:17px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="server-card" data-region="na" onclick="connectServer('New York #1')">
+        <div class="server-flag">🇺🇸</div>
+        <div class="server-info">
+          <div class="server-name">New York #1</div>
+          <div class="server-location">США · NA</div>
+          <div class="server-load-mini">
+            <div class="server-load-bar"><div class="server-load-fill" style="width:72%"></div></div>
+            <span class="server-load-text">72%</span>
+          </div>
+        </div>
+        <div class="server-ping">
+          <span class="ping-val ok">89 мс</span>
+          <span class="ping-label">пинг</span>
+          <div class="ping-bars">
+            <div class="ping-bar active ok" style="height:6px"></div>
+            <div class="ping-bar active ok" style="height:9px"></div>
+            <div class="ping-bar" style="height:13px"></div>
+            <div class="ping-bar" style="height:17px"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="server-card" data-region="asia" onclick="connectServer('Tokyo #1')">
+        <div class="server-flag">🇯🇵</div>
+        <div class="server-info">
+          <div class="server-name">Tokyo #1</div>
+          <div class="server-location">Япония · Asia</div>
+          <div class="server-load-mini">
+            <div class="server-load-bar"><div class="server-load-fill" style="width:89%"></div></div>
+            <span class="server-load-text">89%</span>
+          </div>
+        </div>
+        <div class="server-ping">
+          <span class="ping-val bad">142 мс</span>
+          <span class="ping-label">пинг</span>
+          <div class="ping-bars">
+            <div class="ping-bar active ok" style="height:6px"></div>
+            <div class="ping-bar" style="height:9px"></div>
+            <div class="ping-bar" style="height:13px"></div>
+            <div class="ping-bar" style="height:17px"></div>
+          </div>
         </div>
       </div>
     </div>
-    <div class="server-card">
-      <div class="server-flag">🇳🇱</div>
-      <div class="server-info">
-        <div class="server-name">Amsterdam #1</div>
-        <div class="server-location">Нидерланды, EU</div>
-      </div>
-      <div class="server-ping">
-        <span class="ping-val good">24 мс</span>
-        <span class="ping-label">пинг</span>
-        <div class="ping-bars">
-          <div class="ping-bar active" style="height:6px"></div>
-          <div class="ping-bar active" style="height:9px"></div>
-          <div class="ping-bar active" style="height:13px"></div>
-          <div class="ping-bar" style="height:17px"></div>
-        </div>
-      </div>
-    </div>
-    <div class="server-card">
-      <div class="server-flag">🇫🇮</div>
-      <div class="server-info">
-        <div class="server-name">Helsinki #1</div>
-        <div class="server-location">Финляндия, EU</div>
-      </div>
-      <div class="server-ping">
-        <span class="ping-val good">31 мс</span>
-        <span class="ping-label">пинг</span>
-        <div class="ping-bars">
-          <div class="ping-bar active" style="height:6px"></div>
-          <div class="ping-bar active" style="height:9px"></div>
-          <div class="ping-bar active" style="height:13px"></div>
-          <div class="ping-bar" style="height:17px"></div>
-        </div>
-      </div>
-    </div>
-    <div class="server-card">
-      <div class="server-flag">🇬🇧</div>
-      <div class="server-info">
-        <div class="server-name">London #1</div>
-        <div class="server-location">Великобритания, EU</div>
-      </div>
-      <div class="server-ping">
-        <span class="ping-val ok">47 мс</span>
-        <span class="ping-label">пинг</span>
-        <div class="ping-bars">
-          <div class="ping-bar active ok" style="height:6px"></div>
-          <div class="ping-bar active ok" style="height:9px"></div>
-          <div class="ping-bar active ok" style="height:13px"></div>
-          <div class="ping-bar" style="height:17px"></div>
-        </div>
-      </div>
-    </div>
-    <div class="server-card">
-      <div class="server-flag">🇺🇸</div>
-      <div class="server-info">
-        <div class="server-name">New York #1</div>
-        <div class="server-location">США, NA</div>
-      </div>
-      <div class="server-ping">
-        <span class="ping-val ok">89 мс</span>
-        <span class="ping-label">пинг</span>
-        <div class="ping-bars">
-          <div class="ping-bar active ok" style="height:6px"></div>
-          <div class="ping-bar active ok" style="height:9px"></div>
-          <div class="ping-bar" style="height:13px"></div>
-          <div class="ping-bar" style="height:17px"></div>
-        </div>
-      </div>
-    </div>
-    <div class="server-card">
-      <div class="server-flag">🇯🇵</div>
-      <div class="server-info">
-        <div class="server-name">Tokyo #1</div>
-        <div class="server-location">Япония, Asia</div>
-      </div>
-      <div class="server-ping">
-        <span class="ping-val bad">142 мс</span>
-        <span class="ping-label">пинг</span>
-        <div class="ping-bars">
-          <div class="ping-bar active ok" style="height:6px"></div>
-          <div class="ping-bar" style="height:9px"></div>
-          <div class="ping-bar" style="height:13px"></div>
-          <div class="ping-bar" style="height:17px"></div>
-        </div>
-      </div>
-    </div>
-    <button class="btn btn-support" style="margin-top:4px" onclick="openSupport()">
+
+    <div class="no-servers" id="no-servers">🔍 Ничего не найдено</div>
+
+    <button class="btn btn-support" style="margin-top:8px" onclick="openSupport()">
       💬 Техническая поддержка
     </button>
   </div>
 
-  <!-- ══ DEVICES ══ -->
-  <div class="page" id="page-devices">
-    <div class="devices-header">
-      <div class="devices-title">Устройства</div>
-    </div>
-
-    <div class="devices-limit">
+  <!-- ══ MTPROTO ══ -->
+  <div class="page" id="page-mtproto">
+    <div class="mt-hero">
+      <div class="mt-hero-icon">✈️</div>
       <div>
-        <div class="sub-row-label" style="font-size:13px;color:var(--muted)">Использовано слотов</div>
-        <div class="progress-bar-wrap" style="width:180px;margin-top:8px;">
-          <div class="progress-bar-fill" style="width:40%"></div>
-        </div>
-      </div>
-      <div class="devices-limit-val">2 / 5</div>
-    </div>
-
-    <div class="device-card">
-      <div class="device-icon-wrap">💻</div>
-      <div class="device-info">
-        <div class="device-name">MacBook Pro</div>
-        <div class="device-meta">macOS · Последний вход сегодня</div>
-      </div>
-      <div class="device-status online"></div>
-    </div>
-
-    <div class="device-card">
-      <div class="device-icon-wrap">📱</div>
-      <div class="device-info">
-        <div class="device-name">iPhone 15 Pro</div>
-        <div class="device-meta">iOS · Последний вход сегодня</div>
-      </div>
-      <div class="device-status online"></div>
-    </div>
-
-    <div class="device-card" style="opacity:.5">
-      <div class="device-icon-wrap" style="opacity:.5">🖥️</div>
-      <div class="device-info">
-        <div class="device-name" style="color:var(--muted)">Слот свободен</div>
-        <div class="device-meta">Можно добавить устройство</div>
+        <div class="mt-hero-title">Telegram-прокси</div>
+        <div class="mt-hero-text">MTProto-прокси для Telegram — используй, если тг заблокирован</div>
       </div>
     </div>
 
-    <button class="btn btn-outline" style="margin-top:4px">
-      + Добавить устройство
-    </button>
+    <div class="mt-actions">
+      <div class="mt-actions-title">Доступные прокси</div>
+      <button class="refresh-btn" id="mt-refresh" onclick="loadMTProto()" aria-label="Обновить">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"/>
+          <polyline points="1 20 1 14 7 14"/>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="mtproto-list">
+      <div class="mt-empty">
+        <span class="mt-empty-ico">⏳</span>
+        Загрузка...
+      </div>
+    </div>
   </div>
 
-  <!-- ══ INSTRUCTIONS ══ -->
+<!-- ══ INSTRUCTIONS ══ -->
   <div class="page" id="page-instr">
-    <div class="instr-title">Инструкция</div>
-    <div class="instr-subtitle">Выбери платформу для подключения</div>
+    <div class="instr-hero">
+      <div class="instr-hero-icon">🚀</div>
+      <div class="instr-hero-content">
+        <div class="instr-hero-title">За 3 шага до VPN</div>
+        <div class="instr-hero-text">Выбери свою систему — мы уже всё подготовили</div>
+      </div>
+    </div>
 
-    <div class="accordion" id="acc-mac">
+    <div class="instr-detect" id="instr-detect">
+      <span class="instr-detect-dot"></span>
+      <span id="instr-detect-text">Ваша система определена</span>
+    </div>
+
+    <div class="accordion" id="acc-mac" data-platform="macOS">
       <div class="acc-header" onclick="toggleAcc('acc-mac')">
-        <span class="acc-icon">🍎</span>
-        <span class="acc-label">macOS</span>
-        <span class="acc-arrow">▾</span>
+        <div class="acc-platform">
+          <div class="acc-icon-wrap mac">🍎</div>
+          <span class="acc-label">macOS</span>
+        </div>
+        <div class="acc-right">
+          <span class="acc-badge">~2 мин</span>
+          <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
       </div>
       <div class="acc-body">
         <div class="acc-content">
-          <div class="step"><div class="step-num">1</div><div class="step-text">Скачай <strong>Hiddify</strong> или <strong>V2rayU</strong> из <a href="#">App Store</a>.</div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-text">Нажми <strong>«Скопировать ключ»</strong> на странице Профиль.</div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-text">Открой приложение → <strong>«Добавить сервер»</strong> → вставь ключ.</div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-text">Нажми <strong>«Подключиться»</strong> — значок 🔒 появится в строке меню.</div></div>
+          <div class="acc-actions">
+            <a class="btn btn-primary deeplink-btn" href="#"><span>🚀</span>Открыть в приложении</a>
+            <button class="btn btn-copy" onclick="copyKey()"><span>📋</span>Ключ</button>
+          </div>
+          <div class="acc-subheading">Рекомендуемые приложения</div>
+          <div class="app-list">
+            <a class="app-pill" href="#" target="_blank" rel="noopener"><span class="app-ico">🛡️</span>Hiddify</a>
+            <a class="app-pill" href="#" target="_blank" rel="noopener"><span class="app-ico">🔷</span>V2rayU</a>
+          </div>
+          <div class="acc-subheading">Как подключиться</div>
+          <ol class="steps">
+            <li>Установи одно из приложений выше.</li>
+            <li>Нажми <strong>«Открыть в приложении»</strong> выше — или скопируй ключ вручную.</li>
+            <li>В приложении выбери <strong>«Импорт из буфера»</strong> / <strong>«Add server»</strong>.</li>
+            <li>Нажми <strong>«Подключиться»</strong> — значок 🔒 появится в строке меню.</li>
+          </ol>
         </div>
       </div>
     </div>
 
-    <div class="accordion" id="acc-win">
+    <div class="accordion" id="acc-win" data-platform="Windows">
       <div class="acc-header" onclick="toggleAcc('acc-win')">
-        <span class="acc-icon">🪟</span>
-        <span class="acc-label">Windows</span>
-        <span class="acc-arrow">▾</span>
+        <div class="acc-platform">
+          <div class="acc-icon-wrap win">🪟</div>
+          <span class="acc-label">Windows</span>
+        </div>
+        <div class="acc-right">
+          <span class="acc-badge">~3 мин</span>
+          <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
       </div>
       <div class="acc-body">
         <div class="acc-content">
-          <div class="step"><div class="step-num">1</div><div class="step-text">Скачай <strong>Hiddify</strong> или <strong>v2rayN</strong> с <a href="#">GitHub Releases</a>.</div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-text">Скопируй ключ на странице <strong>Профиль</strong>.</div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-text">Нажми <strong>«Import from clipboard»</strong> в приложении.</div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-text">Включи VPN — иконка появится в системном трее.</div></div>
+          <div class="acc-actions">
+            <a class="btn btn-primary deeplink-btn" href="#"><span>🚀</span>Открыть в приложении</a>
+            <button class="btn btn-copy" onclick="copyKey()"><span>📋</span>Ключ</button>
+          </div>
+          <div class="acc-subheading">Рекомендуемые приложения</div>
+          <div class="app-list">
+            <a class="app-pill" href="#" target="_blank" rel="noopener"><span class="app-ico">🛡️</span>Hiddify</a>
+            <a class="app-pill" href="#" target="_blank" rel="noopener"><span class="app-ico">⚡</span>v2rayN</a>
+          </div>
+          <div class="acc-subheading">Как подключиться</div>
+          <ol class="steps">
+            <li>Скачай приложение с GitHub Releases.</li>
+            <li>Нажми <strong>«Открыть в приложении»</strong> — или скопируй ключ.</li>
+            <li>В приложении выбери <strong>«Import from clipboard»</strong>.</li>
+            <li>Включи VPN — иконка появится в системном трее.</li>
+          </ol>
         </div>
       </div>
     </div>
 
-    <div class="accordion" id="acc-android">
+    <div class="accordion" id="acc-android" data-platform="Android">
       <div class="acc-header" onclick="toggleAcc('acc-android')">
-        <span class="acc-icon">🤖</span>
-        <span class="acc-label">Android</span>
-        <span class="acc-arrow">▾</span>
+        <div class="acc-platform">
+          <div class="acc-icon-wrap android">🤖</div>
+          <span class="acc-label">Android</span>
+        </div>
+        <div class="acc-right">
+          <span class="acc-badge">~1 мин</span>
+          <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
       </div>
       <div class="acc-body">
         <div class="acc-content">
-          <div class="step"><div class="step-num">1</div><div class="step-text">Установи <strong>Hiddify</strong> или <strong>v2rayNG</strong> из <a href="#">Google Play</a>.</div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-text">Скопируй ключ в разделе <strong>Профиль</strong>.</div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-text">В приложении нажми <strong>«+»</strong> → <strong>«Импорт из буфера»</strong>.</div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-text">Выбери сервер и нажми ▶️. Разреши создание VPN-соединения.</div></div>
+          <div class="acc-actions">
+            <a class="btn btn-primary deeplink-btn" href="#"><span>🚀</span>Открыть в приложении</a>
+            <button class="btn btn-copy" onclick="copyKey()"><span>📋</span>Ключ</button>
+          </div>
+          <div class="acc-subheading">Рекомендуемые приложения</div>
+          <div class="app-list">
+            <a class="app-pill" href="#" target="_blank" rel="noopener"><span class="app-ico">🛡️</span>Hiddify</a>
+            <a class="app-pill" href="#" target="_blank" rel="noopener"><span class="app-ico">⚡</span>v2rayNG</a>
+          </div>
+          <div class="acc-subheading">Как подключиться</div>
+          <ol class="steps">
+            <li>Установи приложение из Google Play или GitHub.</li>
+            <li>Нажми <strong>«Открыть в приложении»</strong> — ключ импортируется сам.</li>
+            <li>Выбери сервер и нажми <strong>▶</strong>.</li>
+            <li>Разреши создание VPN-соединения — готово.</li>
+          </ol>
         </div>
       </div>
     </div>
 
-    <div class="accordion" id="acc-ios">
+    <div class="accordion" id="acc-ios" data-platform="iOS / iPadOS">
       <div class="acc-header" onclick="toggleAcc('acc-ios')">
-        <span class="acc-icon">📱</span>
-        <span class="acc-label">iOS / iPadOS</span>
-        <span class="acc-arrow">▾</span>
+        <div class="acc-platform">
+          <div class="acc-icon-wrap ios">📱</div>
+          <span class="acc-label">iOS / iPadOS</span>
+        </div>
+        <div class="acc-right">
+          <span class="acc-badge">~1 мин</span>
+          <svg class="acc-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
       </div>
       <div class="acc-body">
         <div class="acc-content">
-          <div class="step"><div class="step-num">1</div><div class="step-text">Скачай <strong>Hiddify</strong> или <strong>Streisand</strong> из <a href="#">App Store</a>.</div></div>
-          <div class="step"><div class="step-num">2</div><div class="step-text">Скопируй ключ на странице <strong>Профиль</strong>.</div></div>
-          <div class="step"><div class="step-num">3</div><div class="step-text">Нажми <strong>«+»</strong> → <strong>«Добавить из буфера обмена»</strong>.</div></div>
-          <div class="step"><div class="step-num">4</div><div class="step-text">Разреши добавление VPN-профиля и подключись. Готово! 🎉</div></div>
+          <div class="acc-actions">
+            <a class="btn btn-primary deeplink-btn" href="#"><span>🚀</span>Открыть в приложении</a>
+            <button class="btn btn-copy" onclick="copyKey()"><span>📋</span>Ключ</button>
+          </div>
+          <div class="acc-subheading">Рекомендуемые приложения</div>
+          <div class="app-list">
+            <a class="app-pill" href="#" target="_blank" rel="noopener"><span class="app-ico">🛡️</span>Hiddify</a>
+            <a class="app-pill" href="#" target="_blank" rel="noopener"><span class="app-ico">🌊</span>Streisand</a>
+          </div>
+          <div class="acc-subheading">Как подключиться</div>
+          <ol class="steps">
+            <li>Скачай приложение из App Store.</li>
+            <li>Нажми <strong>«Открыть в приложении»</strong> — ключ импортируется сам.</li>
+            <li>Разреши добавление VPN-профиля.</li>
+            <li>Подключись — готово 🎉</li>
+          </ol>
         </div>
       </div>
     </div>
 
-    <div style="height:8px"></div>
+    <div style="height:10px"></div>
     <button class="btn btn-support" onclick="openSupport()">
       💬 Нужна помощь? Написать в поддержку
     </button>
@@ -774,13 +1738,14 @@
       <span class="tab-label">Сервера</span>
     </button>
 
-    <button class="tab-btn" id="tab-devices" onclick="switchTab('devices')">
+    <button class="tab-btn" id="tab-mtproto" onclick="switchTab('mtproto')">
       <div class="tab-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="5" y="2" width="14" height="20" rx="2"/><rect x="2" y="7" width="6" height="11" rx="1"/><line x1="12" y1="18" x2="12" y2="18.01"/>
+          <path d="m22 2-7 20-4-9-9-4Z"/>
+          <path d="M22 2 11 13"/>
         </svg>
       </div>
-      <span class="tab-label">Устройства</span>
+      <span class="tab-label">MTProto</span>
     </button>
 
     <button class="tab-btn active" id="tab-profile" onclick="switchTab('profile')">
@@ -804,10 +1769,331 @@
   </div>
 </div>
 
+<!-- QR Modal -->
+<div class="qr-modal" id="qr-modal">
+  <div class="qr-modal-backdrop" onclick="closeQRModal()"></div>
+  <div class="qr-modal-content">
+    <div class="qr-modal-title" id="qr-modal-title">QR</div>
+    <div class="qr-modal-qr" id="qr-modal-qr"></div>
+    <div class="qr-modal-text" id="qr-modal-text"></div>
+    <div class="qr-modal-btn-row">
+      <button class="btn btn-copy" onclick="copyQRText()" style="margin:0"><span>📋</span>Копировать</button>
+      <button class="btn btn-primary" onclick="closeQRModal()" style="margin:0">Готово</button>
+    </div>
+  </div>
+</div>
+
 <!-- Snackbar -->
 <div class="snackbar" id="snackbar">✅ Ключ скопирован!</div>
+</div><!-- /#app -->
 
 <script>
+  // module-state до всего — чтобы функции, вызываемые рано (onclick, load handlers),
+  // не ловили TDZ при обращении к этим переменным
+  var _mtProxies      = [];
+  var _subExpires     = null;
+  var _countdownTimer = null;
+  var _qrCurrentText  = '';
+
+  // Ключ подписки — используется в copyKey, deeplink, Profile QR
+  var VLESS_KEY = 'vless://EBL-04821-xKz9mPq@eblo.vpn:443?type=ws&security=tls#Eblo.VPN';
+
+  /* ══════════════════════════════════════
+     INIT — параметры подписки из URL
+     ?sub=<uuid>&expires=YYYY-MM-DD&type=<название>
+  ══════════════════════════════════════ */
+  const params  = new URLSearchParams(location.search);
+  const subUuid = params.get('sub');
+  const subType = params.get('type');
+  const subExp  = params.get('expires');
+
+  const botName = window.APP_CONFIG?.BOT_NAME ?? 'eblo_vpn_bot';
+  const guardBtn  = document.getElementById('guard-btn');
+  const guardText = document.getElementById('guard-text');
+  guardBtn.href = `https://t.me/${botName}`;
+  guardText.textContent = `Открой это приложение по ссылке из бота @${botName}`;
+
+  if (!subUuid) {
+    document.getElementById('tg-guard').classList.add('show');
+    document.getElementById('app').style.display = 'none';
+  } else {
+    fillSubscriptionInfo(subType, subExp);
+  }
+
+  function pluralDays(n) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return 'день';
+    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return 'дня';
+    return 'дней';
+  }
+
+  const RING_CIRC = 2 * Math.PI * 34; // ≈ 213.63
+  // _subExpires, _countdownTimer объявлены в самом начале скрипта
+
+  function setRingFill(pct) {
+    const ring = document.getElementById('sub-ring');
+    if (!ring) return;
+    const clamped = Math.max(0, Math.min(1, pct));
+    ring.style.strokeDashoffset = RING_CIRC * (1 - clamped);
+  }
+
+  function pluralHours(n) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return 'час';
+    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return 'часа';
+    return 'часов';
+  }
+  function pluralMins(n) {
+    const m10 = n % 10, m100 = n % 100;
+    if (m10 === 1 && m100 !== 11) return 'минута';
+    if (m10 >= 2 && m10 <= 4 && (m100 < 10 || m100 >= 20)) return 'минуты';
+    return 'минут';
+  }
+
+  function updateCountdown() {
+    if (!_subExpires) return;
+    const diff   = _subExpires - Date.now();
+    const numEl  = document.getElementById('ring-num');
+    const unitEl = document.getElementById('ring-unit');
+    if (diff <= 0) {
+      numEl.textContent  = '0';
+      unitEl.textContent = 'истекла';
+      setRingFill(0);
+      if (_countdownTimer) { clearInterval(_countdownTimer); _countdownTimer = null; }
+      return;
+    }
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000) / 60000);
+
+    if (days >= 1) {
+      numEl.textContent  = String(days);
+      unitEl.textContent = pluralDays(days);
+    } else if (hours >= 1) {
+      numEl.textContent  = String(hours);
+      unitEl.textContent = pluralHours(hours);
+    } else {
+      numEl.textContent  = String(mins);
+      unitEl.textContent = pluralMins(mins);
+    }
+    // Кольцо: полное при >=30 днях, пропорционально если меньше
+    setRingFill(Math.min(days, 30) / 30);
+  }
+
+  function fillSubscriptionInfo(type, expires) {
+    if (type) {
+      document.getElementById('val-type').textContent = type;
+    }
+    if (expires) {
+      const d = new Date(expires);
+      if (!isNaN(d)) {
+        const months = ['января','февраля','марта','апреля','мая','июня',
+                        'июля','августа','сентября','октября','ноября','декабря'];
+        document.getElementById('val-expires').textContent =
+          `активна до ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
+        _subExpires = d;
+        updateCountdown();
+        if (_countdownTimer) clearInterval(_countdownTimer);
+        _countdownTimer = setInterval(updateCountdown, 30 * 1000);
+      }
+    }
+  }
+
+  function openReferral() {
+    showSnackbar('🎁 Реферальная программа скоро!');
+  }
+
+  /* ══════════════════════════════════════
+     SERVERS — поиск, фильтр, refresh, connect
+  ══════════════════════════════════════ */
+  function filterServers() {
+    const q = (document.getElementById('servers-search')?.value || '').toLowerCase().trim();
+    const region = document.querySelector('.chip.active')?.dataset.region || 'all';
+    let shown = 0;
+    document.querySelectorAll('#servers-list .server-card').forEach(card => {
+      const name = card.querySelector('.server-name').textContent.toLowerCase();
+      const loc  = card.querySelector('.server-location').textContent.toLowerCase();
+      const r    = card.dataset.region || '';
+      const matchQ = !q || name.includes(q) || loc.includes(q);
+      const matchR = region === 'all' || r === region;
+      const visible = matchQ && matchR;
+      card.classList.toggle('hidden', !visible);
+      if (visible) shown++;
+    });
+    document.getElementById('no-servers')?.classList.toggle('show', shown === 0);
+  }
+
+  function setRegion(el) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    filterServers();
+  }
+
+  function refreshPings() {
+    const btn = document.getElementById('refresh-btn');
+    if (!btn || btn.classList.contains('spinning')) return;
+    btn.classList.add('spinning');
+    showSnackbar('📡 Проверяю пинги...');
+    setTimeout(() => btn.classList.remove('spinning'), 1400);
+  }
+
+  function connectServer(name) {
+    showSnackbar(`⚡ Подключаюсь к ${name}...`);
+  }
+
+  /* ══════════════════════════════════════
+     QR — рендер и модалка
+  ══════════════════════════════════════ */
+  function renderQR(el, text) {
+    if (!el) return;
+    el.innerHTML = '';
+    if (typeof qrcode !== 'function') {
+      el.innerHTML = '<div style="color:#999;font-size:10px;padding:8px;text-align:center;word-break:break-all">QR-генератор не загрузился</div>';
+      return;
+    }
+    try {
+      const qr = qrcode(0, 'M');
+      qr.addData(String(text || ''));
+      qr.make();
+      // createImgTag → <img src="data:image/gif;base64,..."> — максимально совместимо
+      el.innerHTML = qr.createImgTag(6, 2);
+      const img = el.querySelector('img');
+      if (img) {
+        img.style.cssText = 'width:100%;height:auto;display:block;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor';
+      }
+    } catch (e) {
+      console.error('[QR] render failed:', e);
+      el.innerHTML = `<div style="color:#999;font-size:11px;padding:8px;text-align:center">${escapeHtml(String(e?.message || e))}</div>`;
+    }
+  }
+
+  function openQRModal(text, title) {
+    _qrCurrentText = text;
+    document.getElementById('qr-modal-title').textContent = title || 'QR-код';
+    document.getElementById('qr-modal-text').textContent  = text;
+    renderQR(document.getElementById('qr-modal-qr'), text);
+    document.getElementById('qr-modal').classList.add('show');
+  }
+  function closeQRModal() {
+    document.getElementById('qr-modal').classList.remove('show');
+  }
+  function copyQRText() {
+    if (!_qrCurrentText) return;
+    navigator.clipboard.writeText(_qrCurrentText).catch(() => {});
+    showSnackbar('✅ Скопировано');
+  }
+
+  /* ══════════════════════════════════════
+     MTPROTO — загрузка из mtproto.txt
+  ══════════════════════════════════════ */
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function parseMTProto(text) {
+    return text.split('\n')
+      .map(l => l.trim())
+      .filter(l => l && !l.startsWith('#'))
+      .map(line => {
+        let name = null, url = line;
+        const pipe = line.indexOf('|');
+        if (pipe !== -1) {
+          name = line.slice(0, pipe).trim();
+          url  = line.slice(pipe + 1).trim();
+        }
+        const srv = (url.match(/[?&]server=([^&\s]+)/i) || [])[1];
+        const prt = (url.match(/[?&]port=(\d+)/i) || [])[1];
+        const sec = (url.match(/[?&]secret=([^&\s]+)/i) || [])[1];
+        if (!srv || !prt || !sec) return null;
+        return {
+          name: name || srv,
+          server: srv,
+          port: +prt,
+          secret: sec,
+          url
+        };
+      })
+      .filter(Boolean);
+  }
+
+  function renderMTProto(list) {
+    const c = document.getElementById('mtproto-list');
+    if (!list.length) {
+      c.innerHTML = '<div class="mt-empty"><span class="mt-empty-ico">📭</span>Прокси пока не добавлены</div>';
+      return;
+    }
+    c.innerHTML = list.map((p, i) => `
+      <div class="proxy-card">
+        <div class="proxy-icon">✈️</div>
+        <div class="proxy-info">
+          <div class="proxy-name">${escapeHtml(p.name)}</div>
+          <div class="proxy-server">${escapeHtml(p.server)}:${p.port}</div>
+        </div>
+        <div class="proxy-actions">
+          <button class="proxy-btn" onclick="copyProxy(${i})" aria-label="Копировать">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+          <button class="proxy-btn" onclick="showProxyQR(${i})" aria-label="QR">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="7" rx="1"/>
+              <rect x="14" y="3" width="7" height="7" rx="1"/>
+              <rect x="3" y="14" width="7" height="7" rx="1"/>
+              <path d="M14 14h3v3h-3zM19 19h2v2h-2z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function resolveRelative(filename) {
+    const base = location.href.split('?')[0].split('#')[0];
+    const dir  = base.endsWith('/') ? base : base.replace(/[^/]*$/, '');
+    return dir + filename;
+  }
+
+  async function loadMTProto() {
+    const btn = document.getElementById('mt-refresh');
+    btn?.classList.add('spinning');
+    try {
+      const url = resolveRelative('mtproto.txt') + '?_=' + Date.now();
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const text = await res.text();
+      _mtProxies = parseMTProto(text);
+      renderMTProto(_mtProxies);
+    } catch (e) {
+      console.error('[MTProto] load failed:', e);
+      document.getElementById('mtproto-list').innerHTML =
+        `<div class="mt-empty"><span class="mt-empty-ico">⚠️</span>${escapeHtml(String(e?.message || e))}</div>`;
+    } finally {
+      setTimeout(() => btn?.classList.remove('spinning'), 600);
+    }
+  }
+
+  function copyProxy(i) {
+    const p = _mtProxies[i];
+    if (!p) return;
+    navigator.clipboard.writeText(p.url).catch(() => {});
+    showSnackbar('✅ Прокси скопирован');
+  }
+
+  function showProxyQR(i) {
+    const p = _mtProxies[i];
+    if (!p) return;
+    openQRModal(p.url, p.name);
+  }
+
+  // Init — вся инициализация в одном месте в конце файла (после всех function declarations).
+  // Ничего не полагается на window 'load' — в некоторых контекстах (BFCache, мини-апп webview)
+  // поздно добавленный listener может не получить событие.
+
+  /* ══════════════════════════════════════
+     TAB BAR
+  ══════════════════════════════════════ */
   function movePill(tabBtn) {
     const pill = document.getElementById('tab-pill');
     const bar  = document.getElementById('tabbar');
@@ -826,9 +2112,9 @@
     movePill(activeBtn);
   }
 
-  // Init pill position on load (no transition on first render)
-  window.addEventListener('load', () => {
+  function initPill() {
     const pill = document.getElementById('tab-pill');
+    if (!pill) return;
     pill.style.transition = 'none';
     const activeBtn = document.querySelector('.tab-btn.active');
     if (activeBtn) movePill(activeBtn);
@@ -837,7 +2123,153 @@
         pill.style.transition = '';
       });
     });
-  });
+    setupPillDrag();
+  }
+
+  /* ══════════════════════════════════════
+     PILL DRAG — iPhone-style spring physics
+     Ведущий край прилипает к пальцу, ведомый отстаёт с пружиной
+     → капсула тянется в сторону движения + слегка сжимается по вертикали
+  ══════════════════════════════════════ */
+  function setupPillDrag() {
+    const pill = document.getElementById('tab-pill');
+    const bar  = document.getElementById('tabbar');
+
+    const MOVE_THRESHOLD = 4;
+    const BAR_PADDING    = 5;
+    const FOLLOW         = 0.18;  // скорость, с которой капсула догоняет палец (0..1)
+    const MAX_SQUEEZE    = 0.07;  // макс. вертикальное сжатие (7%)
+
+    let dragging = false;
+    let moved    = false;
+    let startX   = 0;
+    let startLeft = 0;
+    let baseW    = 0;
+    let barW     = 0;
+    let targetLeft   = 0;
+    let renderedLeft = 0;
+    let rafId = null;
+
+    // Apple rubber band: асимптотическое сопротивление за краями
+    function rubberBand(over) {
+      return over * 0.55 / (1 + over / 60);
+    }
+
+    function tabs() { return [...document.querySelectorAll('.tab-btn')]; }
+
+    function closestTabToLeft(left) {
+      const center = left + baseW / 2;
+      const barLeft = bar.getBoundingClientRect().left;
+      let best = null, bestDist = Infinity;
+      tabs().forEach(btn => {
+        const r = btn.getBoundingClientRect();
+        const btnCenter = (r.left - barLeft) + r.width / 2;
+        const d = Math.abs(center - btnCenter);
+        if (d < bestDist) { bestDist = d; best = btn; }
+      });
+      return best;
+    }
+
+    function updateTarget(rawLeft) {
+      const minLeft = BAR_PADDING;
+      const maxLeft = barW - BAR_PADDING - baseW;
+      if (rawLeft > maxLeft) {
+        targetLeft = maxLeft + rubberBand(rawLeft - maxLeft);
+      } else if (rawLeft < minLeft) {
+        targetLeft = minLeft - rubberBand(minLeft - rawLeft);
+      } else {
+        targetLeft = rawLeft;
+      }
+    }
+
+    function render() {
+      const stretch = targetLeft - renderedLeft;
+      let left, width;
+      if (stretch >= 0) {
+        // Палец ушёл вперёд — правый край догоняет, левый отстаёт
+        left  = renderedLeft;
+        width = baseW + stretch;
+      } else {
+        // Палец ушёл назад — левый край догоняет, правый отстаёт
+        left  = renderedLeft + stretch;
+        width = baseW - stretch;
+      }
+      pill.style.left  = left  + 'px';
+      pill.style.width = width + 'px';
+
+      // Чем сильнее растяжение — тем заметнее вертикальное сжатие
+      const squeezeY = Math.min(MAX_SQUEEZE, Math.abs(stretch) / 220);
+      pill.style.transform = `scaleY(${1 - squeezeY})`;
+
+      // Подсвечиваем таб, над которым сейчас центр капсулы
+      const t = closestTabToLeft(renderedLeft);
+      if (t) tabs().forEach(b => b.classList.toggle('active', b === t));
+    }
+
+    function tick() {
+      if (!dragging) { rafId = null; return; }
+      // Экспоненциальное сглаживание: всегда плавно, никогда не перелетает
+      renderedLeft += (targetLeft - renderedLeft) * FOLLOW;
+      render();
+      rafId = requestAnimationFrame(tick);
+    }
+
+    pill.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      moved    = false;
+      startX   = e.clientX;
+      startLeft = parseFloat(pill.style.left) || 0;
+      baseW    = pill.offsetWidth;
+      barW     = bar.clientWidth;
+      targetLeft   = startLeft;
+      renderedLeft = startLeft;
+      pill.setPointerCapture(e.pointerId);
+      pill.style.transition = 'none';
+      pill.classList.add('dragging');
+      e.preventDefault();
+      rafId = requestAnimationFrame(tick);
+    });
+
+    pill.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > MOVE_THRESHOLD) moved = true;
+      updateTarget(startLeft + dx);
+    });
+
+    function endDrag(e) {
+      if (!dragging) return;
+      dragging = false;
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+      try { pill.releasePointerCapture(e.pointerId); } catch {}
+      pill.style.transition = '';
+      pill.style.transform  = '';
+      pill.classList.remove('dragging');
+
+      if (!moved) {
+        const activeBtn = document.querySelector('.tab-btn.active');
+        if (activeBtn) movePill(activeBtn);
+        return;
+      }
+
+      const minLeft = BAR_PADDING;
+      const maxLeft = barW - BAR_PADDING - baseW;
+      const clamped = Math.max(minLeft, Math.min(maxLeft, renderedLeft));
+      const target  = closestTabToLeft(clamped);
+      if (target) {
+        const name = target.id.replace('tab-', '');
+        switchTab(name); // movePill внутри защёлкнет ширину и позицию с пружиной
+      }
+    }
+
+    pill.addEventListener('pointerup', endDrag);
+    pill.addEventListener('pointercancel', endDrag);
+
+    window.addEventListener('resize', () => {
+      const activeBtn = document.querySelector('.tab-btn.active');
+      if (activeBtn && !dragging) movePill(activeBtn);
+    });
+  }
 
   function toggleAcc(id) {
     const el = document.getElementById(id);
@@ -847,10 +2279,67 @@
   }
 
   function copyKey() {
-    const key = 'vless://EBL-04821-xKz9mPq@eblo.vpn:443?type=ws&security=tls#Eblo.VPN';
-    navigator.clipboard.writeText(key).catch(() => {});
+    navigator.clipboard.writeText(VLESS_KEY).catch(() => {});
     showSnackbar('✅ Ключ скопирован!');
   }
+
+  /* ══════════════════════════════════════
+     INSTRUCTIONS — детект платформы + deeplink
+  ══════════════════════════════════════ */
+  function detectPlatform() {
+    const ua = navigator.userAgent.toLowerCase();
+    if (/iphone|ipad|ipod/.test(ua))     return 'ios';
+    if (/android/.test(ua))              return 'android';
+    if (/macintosh|mac os x/.test(ua))   return 'mac';
+    if (/windows/.test(ua))              return 'win';
+    return null;
+  }
+
+  function initInstructions() {
+    // Проставляем vless:// во все deep-link кнопки
+    document.querySelectorAll('.deeplink-btn').forEach(a => { a.href = VLESS_KEY; });
+
+    const platform = detectPlatform();
+    if (!platform) return;
+
+    const acc = document.getElementById('acc-' + platform);
+    if (!acc) return;
+
+    acc.classList.add('detected', 'open');
+
+    // Бейдж «Ваша система» рядом с названием
+    const chip = document.createElement('span');
+    chip.className = 'acc-your-chip';
+    chip.textContent = 'Ваша';
+    acc.querySelector('.acc-platform')?.appendChild(chip);
+
+    // Баннер сверху
+    const banner = document.getElementById('instr-detect');
+    const text   = document.getElementById('instr-detect-text');
+    if (banner && text) {
+      text.textContent = `Обнаружено: ${acc.dataset.platform} — уже открыто`;
+      banner.classList.add('show');
+    }
+  }
+
+  /* ══════════════════════════════════════
+     FINAL INIT — синхронно, в самом конце.
+     DOM готов (script в конце body), qrcode.js загружен (sync script в head).
+     Каждый блок в отдельном try/catch — ошибка в одном не ломает остальное.
+  ══════════════════════════════════════ */
+  (function init() {
+    try { renderQR(document.getElementById('profile-qr'), VLESS_KEY); }
+    catch (e) { console.error('[init] profile QR:', e); }
+
+    try { loadMTProto(); }
+    catch (e) { console.error('[init] mtproto:', e); }
+
+    try { initPill(); }
+    catch (e) { console.error('[init] pill:', e); }
+
+    try { initInstructions(); }
+    catch (e) { console.error('[init] instructions:', e); }
+  })();
 
   function openApp() {
     showSnackbar('🚀 Открываю приложение...');
