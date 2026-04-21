@@ -1938,17 +1938,23 @@
   function renderQR(el, text) {
     if (!el) return;
     el.innerHTML = '';
-    if (typeof qrcode === 'undefined') {
-      el.innerHTML = '<div style="color:#999;font-size:10px;padding:8px;text-align:center">QR-генератор не загрузился.<br>Проверь интернет или используй копирование.</div>';
+    if (typeof qrcode !== 'function') {
+      el.innerHTML = '<div style="color:#999;font-size:10px;padding:8px;text-align:center;word-break:break-all">QR-генератор не загрузился</div>';
       return;
     }
     try {
       const qr = qrcode(0, 'M');
-      qr.addData(text);
+      qr.addData(String(text || ''));
       qr.make();
-      el.innerHTML = qr.createSvgTag({ scalable: true, margin: 1 });
+      // createImgTag → <img src="data:image/gif;base64,..."> — максимально совместимо
+      el.innerHTML = qr.createImgTag(6, 2);
+      const img = el.querySelector('img');
+      if (img) {
+        img.style.cssText = 'width:100%;height:auto;display:block;image-rendering:pixelated;-ms-interpolation-mode:nearest-neighbor';
+      }
     } catch (e) {
-      el.innerHTML = '<div style="color:#999;font-size:11px;padding:8px;text-align:center">Ошибка генерации QR</div>';
+      console.error('[QR] render failed:', e);
+      el.innerHTML = `<div style="color:#999;font-size:11px;padding:8px;text-align:center">${escapeHtml(String(e?.message || e))}</div>`;
     }
   }
 
@@ -2054,9 +2060,9 @@
       _mtProxies = parseMTProto(text);
       renderMTProto(_mtProxies);
     } catch (e) {
-      console.warn('[MTProto] load failed:', e);
+      console.error('[MTProto] load failed:', e);
       document.getElementById('mtproto-list').innerHTML =
-        '<div class="mt-empty"><span class="mt-empty-ico">⚠️</span>Не удалось загрузить список.<br>Попробуй позже.</div>';
+        `<div class="mt-empty"><span class="mt-empty-ico">⚠️</span>${escapeHtml(String(e?.message || e))}</div>`;
     } finally {
       setTimeout(() => btn?.classList.remove('spinning'), 600);
     }
