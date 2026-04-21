@@ -2087,10 +2087,9 @@
     openQRModal(p.url, p.name);
   }
 
-  /* Рендерим QR профиля + грузим MTProto сразу — скрипт стоит в конце body,
-     DOM готов, qrcode.js уже загружен (sync script в head) */
-  renderQR(document.getElementById('profile-qr'), VLESS_KEY);
-  loadMTProto();
+  // Init — вся инициализация в одном месте в конце файла (после всех function declarations).
+  // Ничего не полагается на window 'load' — в некоторых контекстах (BFCache, мини-апп webview)
+  // поздно добавленный listener может не получить событие.
 
   /* ══════════════════════════════════════
      TAB BAR
@@ -2113,9 +2112,9 @@
     movePill(activeBtn);
   }
 
-  // Init pill position on load (no transition on first render)
-  window.addEventListener('load', () => {
+  function initPill() {
     const pill = document.getElementById('tab-pill');
+    if (!pill) return;
     pill.style.transition = 'none';
     const activeBtn = document.querySelector('.tab-btn.active');
     if (activeBtn) movePill(activeBtn);
@@ -2125,7 +2124,7 @@
       });
     });
     setupPillDrag();
-  });
+  }
 
   /* ══════════════════════════════════════
      PILL DRAG — iPhone-style spring physics
@@ -2323,7 +2322,24 @@
     }
   }
 
-  window.addEventListener('load', initInstructions);
+  /* ══════════════════════════════════════
+     FINAL INIT — синхронно, в самом конце.
+     DOM готов (script в конце body), qrcode.js загружен (sync script в head).
+     Каждый блок в отдельном try/catch — ошибка в одном не ломает остальное.
+  ══════════════════════════════════════ */
+  (function init() {
+    try { renderQR(document.getElementById('profile-qr'), VLESS_KEY); }
+    catch (e) { console.error('[init] profile QR:', e); }
+
+    try { loadMTProto(); }
+    catch (e) { console.error('[init] mtproto:', e); }
+
+    try { initPill(); }
+    catch (e) { console.error('[init] pill:', e); }
+
+    try { initInstructions(); }
+    catch (e) { console.error('[init] instructions:', e); }
+  })();
 
   function openApp() {
     showSnackbar('🚀 Открываю приложение...');
