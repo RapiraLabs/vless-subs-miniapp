@@ -1788,6 +1788,13 @@
 </div><!-- /#app -->
 
 <script>
+  // module-state до всего — чтобы функции, вызываемые рано (onclick, load handlers),
+  // не ловили TDZ при обращении к этим переменным
+  var _mtProxies      = [];
+  var _subExpires     = null;
+  var _countdownTimer = null;
+  var _qrCurrentText  = '';
+
   /* ══════════════════════════════════════
      INIT — параметры подписки из URL
      ?sub=<uuid>&expires=YYYY-MM-DD&type=<название>
@@ -1818,8 +1825,7 @@
   }
 
   const RING_CIRC = 2 * Math.PI * 34; // ≈ 213.63
-  let _subExpires = null;
-  let _countdownTimer = null;
+  // _subExpires, _countdownTimer объявлены в самом начале скрипта
 
   function setRingFill(pct) {
     const ring = document.getElementById('sub-ring');
@@ -1958,7 +1964,6 @@
     }
   }
 
-  let _qrCurrentText = '';
   function openQRModal(text, title) {
     _qrCurrentText = text;
     document.getElementById('qr-modal-title').textContent = title || 'QR-код';
@@ -2007,8 +2012,6 @@
       })
       .filter(Boolean);
   }
-
-  let _mtProxies = [];
 
   function renderMTProto(list) {
     const c = document.getElementById('mtproto-list');
