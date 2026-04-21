@@ -1795,6 +1795,9 @@
   var _countdownTimer = null;
   var _qrCurrentText  = '';
 
+  // Ключ подписки — используется в copyKey, deeplink, Profile QR
+  var VLESS_KEY = 'vless://EBL-04821-xKz9mPq@eblo.vpn:443?type=ws&security=tls#Eblo.VPN';
+
   /* ══════════════════════════════════════
      INIT — параметры подписки из URL
      ?sub=<uuid>&expires=YYYY-MM-DD&type=<название>
@@ -2084,11 +2087,10 @@
     openQRModal(p.url, p.name);
   }
 
-  /* Рендерим QR профиля + грузим MTProto после загрузки страницы */
-  window.addEventListener('load', () => {
-    renderQR(document.getElementById('profile-qr'), VLESS_KEY);
-    loadMTProto();
-  });
+  /* Рендерим QR профиля + грузим MTProto сразу — скрипт стоит в конце body,
+     DOM готов, qrcode.js уже загружен (sync script в head) */
+  renderQR(document.getElementById('profile-qr'), VLESS_KEY);
+  loadMTProto();
 
   /* ══════════════════════════════════════
      TAB BAR
@@ -2276,8 +2278,6 @@
     document.querySelectorAll('.accordion').forEach(a => a.classList.remove('open'));
     if (!isOpen) el.classList.add('open');
   }
-
-  const VLESS_KEY = 'vless://EBL-04821-xKz9mPq@eblo.vpn:443?type=ws&security=tls#Eblo.VPN';
 
   function copyKey() {
     navigator.clipboard.writeText(VLESS_KEY).catch(() => {});
